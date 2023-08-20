@@ -1,0 +1,113 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  scroll-behavior: smooth;
+}
+.login-page {
+  background-color: hsla(0, 0%, 100%, 1);
+  background-image: radial-gradient(
+      at 100% 100%,
+      hsla(165, 100%, 40%, 1) 0px,
+      transparent 50%
+    ),
+    radial-gradient(at 0% 0%, hsla(220, 100%, 78%, 1) 0px, transparent 50%);
+}
+/*--------------------------------SCROLLBAR-------------------------------------------*/
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #d9d9d9;
+}
+::-webkit-scrollbar-thumb {
+  background: #050816;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00cc99;
+}
+
+/*------------------------------------------------------------------------------*/
+.text-gradient {
+  background: linear-gradient(90deg, #8fb3ff 0%, #0c9 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.stroked-text {
+  -webkit-text-stroke: 2px black;
+  -webkit-text-fill-color: transparent;
+}
+.cnx {
+  border-radius: 20px;
+  background: rgba(235, 241, 255, 0.5);
+  box-shadow: 10px 15px 20px 0px rgba(0, 0, 0, 0.25);
+}
+.textbox {
+  border-radius: 40px;
+  border: 1px solid #5d776b;
+  background: rgba(255, 255, 255, 0.6);
+}
+.textbox2 {
+  border-radius: 15px;
+  border: 1px solid #5d776b;
+  background: rgba(255, 255, 255, 0.6);
+}
+.app-bar {
+  border: 1px solid #c6c6c6;
+}
+.cnx-btn {
+  color: white;
+  display: inline-flex;
+  font-weight: 600;
+  padding: 12px 50px;
+  align-items: flex-start;
+  border-radius: 180px;
+  background: #00cc99;
+}
+.backdrop {
+  position: fixed;
+  top: 20;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 20;
+}
+.filtre-btn {
+  width: 120px;
+  padding: 8px 15px 8px 15px;
+  color: #00cc99;
+  border-radius: 10px;
+  background: rgba(0, 204, 153, 0.18);
+}
+.add-btn {
+  width: 120px;
+  padding: 8px 15px 8px 15px;
+  border-radius: 10px;
+  background: #0c9;
+  color: white;
+}
+image {
+  background-color: transparent;
+  background-image: none;
+}
+.filtre-box {
+  border-radius: 10px;
+  border: 1px solid #5d776b;
+  background: rgba(255, 255, 255, 0.6);
+}
+.submit-filtre-btn {
+  width: 120px;
+  color: #8fb3ff;
+  padding: 8px 15px 8px 15px;
+  border-radius: 10px;
+  background: rgba(143, 179, 255, 0.2);
+}
