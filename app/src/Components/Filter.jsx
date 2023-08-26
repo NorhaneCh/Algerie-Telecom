@@ -54,7 +54,7 @@ const Filter = ({ data, setData, showFiltre, setShowFiltre }) => {
               <label className="rounded-[40px] flex flex-col text-[15px] w-[170px]">
                 Service/Centre
               </label>
-              <select id="pays" name="pays">
+              <select name="services" className="textbox rounded-[10px]">
                 <option value=""></option>
                 {services.map((service) => (
                   <option value={service}>{service}</option>

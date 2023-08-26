@@ -15,10 +15,12 @@ module.exports = {
         accent: "#00CC99",
       },
       boxShadow: {
-        card: "0px 35px 120px -15px #211e35",
+        card: "0px 35px 120px -15px #000",
       },
       screens: {
         xs: "450px",
+        lg:"1280px",
+        xl :"1920px",
       },
     },
   },

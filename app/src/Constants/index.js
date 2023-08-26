@@ -16,13 +16,13 @@ export const columns = [
     header: "Pc Portable",
   },
   {
-    header: "Imprimente multifonctions",
+    header: "Imprimante multifonctions",
   },
   {
-    header: "Imprimente IDK",
+    header: "Imprimante IDK",
   },
   {
-    header: "Imprimente Thermique",
+    header: "Imprimante Thermique",
   },
   {
     header: "Scanner",
@@ -31,9 +31,6 @@ export const columns = [
     header: "Adresse IP",
   },
 ];
-export const services = [
-  "service1",
-  "service2",
-  "service3"
-];
-
+export const services = ["service1", "service2", "service3"];
+export const pcMarques = [" ", "DELL", "HP", "LENOVO"];
+export const imprimenteMarques = [" ", "Epson", "HP", "LENOVO"];

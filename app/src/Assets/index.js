@@ -17,6 +17,9 @@ import settings from "./settings.png"
 import logout from "./Logout.png"
 import true_icon from "./true_icon.png"
 import false_icon from "./false_icon.png"
+import download_icon from "./download_icon.png"
+import save_icon from "./save_icon.png"
+import home from "./home.png"
 
 export {
   algerie_telecom,
@@ -37,5 +40,8 @@ export {
   settings,
   logout,
   true_icon,
-  false_icon
+  false_icon,
+  download_icon,
+  save_icon,
+  home
 };

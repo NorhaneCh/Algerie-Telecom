@@ -1,7 +1,6 @@
 import "./globals.css";
 import Providers from "../Components/providers";
 import AppBar from "../Components/AppBar"
-import {styles} from "../styles"
 
 export const metadata = {
   title: "Algerie Telecom",
@@ -12,8 +11,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr">
       <body>
+        
         <Providers>
-          {children}     
+        <AppBar/>
+        {children}               
         </Providers>
       </body>
     </html>

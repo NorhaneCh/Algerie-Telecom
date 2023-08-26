@@ -19,6 +19,16 @@
     ),
     radial-gradient(at 0% 0%, hsla(220, 100%, 78%, 1) 0px, transparent 50%);
 }
+.box{
+  background-color:hsla(217,0%,100%,1);
+  background-image:
+  radial-gradient(at 50% 50%, hsla(195,100%,78%,0.5) 0px, transparent 50%);
+}
+.home{
+  background-color:hsla(217,0%,100%,1);
+  background-image:
+  radial-gradient(at 50% 35%, hsla(195,100%,78%,0.5) 0px, transparent 50%);
+}
 /*--------------------------------SCROLLBAR-------------------------------------------*/
 ::-webkit-scrollbar {
   width: 7px;
@@ -31,7 +41,7 @@
   background: #050816;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00cc99;
+  background: #8fb3ff;
 }
 
 /*------------------------------------------------------------------------------*/
@@ -51,15 +61,10 @@
   box-shadow: 10px 15px 20px 0px rgba(0, 0, 0, 0.25);
 }
 .textbox {
-  border-radius: 40px;
   border: 1px solid #5d776b;
   background: rgba(255, 255, 255, 0.6);
 }
-.textbox2 {
-  border-radius: 15px;
-  border: 1px solid #5d776b;
-  background: rgba(255, 255, 255, 0.6);
-}
+
 .app-bar {
   border: 1px solid #c6c6c6;
 }
@@ -92,7 +97,7 @@
   width: 120px;
   padding: 8px 15px 8px 15px;
   border-radius: 10px;
-  background: #0c9;
+  background: #8fb3ff;
   color: white;
 }
 image {
@@ -110,4 +115,14 @@ image {
   padding: 8px 15px 8px 15px;
   border-radius: 10px;
   background: rgba(143, 179, 255, 0.2);
+}
+.action-bar{
+  border-radius: 10px 0px 0px 10px;
+}
+.save-btn{
+  width: 150px;
+  color: white;
+  background-color: #00cc99;
+  padding: 8px 15px 8px 15px;
+  border-radius: 10px;
 }

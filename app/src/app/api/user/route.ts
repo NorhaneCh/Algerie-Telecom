@@ -3,10 +3,13 @@ import prisma from "../../../lib/prisma";
 import * as bcrypt from "bcrypt";
 
 interface RequestBody {
-  name: string;
-  email: string;
+  username: string;
   password: string;
-  isAdmin: boolean
+  firstName: string;
+  lastName: string;
+  isAdmin: boolean;
+  canAdd: boolean;
+  canDelete: boolean;
 }
 
 export async function POST(request: Request) {
@@ -14,10 +17,13 @@ export async function POST(request: Request) {
 
   const user = await prisma.user.create({
     data: {
-      name: body.name,
-      email: body.email,
+      username: body.username,
       password: await bcrypt.hash(body.password, 10),
-      isAdmin:body.isAdmin
+      firstName: body.firstName,
+      lastName: body.lastName,
+      isAdmin: body.isAdmin,
+      canAdd: body.canAdd,
+      canDelete: body.canDelete,
     },
   });
   const { password, ...result } = user;
