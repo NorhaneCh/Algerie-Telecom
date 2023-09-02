@@ -21,7 +21,8 @@ import download_icon from "./download_icon.png";
 import save_icon from "./save_icon.png";
 import home from "./home.png";
 import delete_icon_white from "./delete_icon_white.png";
-import user_icon from "./user.png"
+import user_icon from "./user.png";
+import white_true_icon from "./white_true_icon.png";
 
 export {
   algerie_telecom,
@@ -47,5 +48,6 @@ export {
   save_icon,
   home,
   delete_icon_white,
-  user_icon
+  user_icon,
+  white_true_icon,
 };

@@ -18,7 +18,6 @@ const HomePage = () => {
   const [showInfos, setShowInfos] = useState(false);
   const [selectedData, setSelectedData] = useState();
   const [showAdd, setShowAdd] = useState(false);
-  const [showPass, setShowPass] = useState(false);
   const { data: session } = useSession();
 
   const getData = async () => {
@@ -81,6 +80,7 @@ const HomePage = () => {
             <Infos
               setShowInfos={setShowInfos}
               selectedData={selectedData}
+              setSelectedData={setSelectedData}
               setData={setData}
               data={data}
             />

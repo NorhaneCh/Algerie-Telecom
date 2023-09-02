@@ -1,7 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import { imprimenteMarques, pcMarques, services } from "../Constants";
+import { imprimanteMarques, pcMarques, services } from "../Constants";
 import { useSession } from "next-auth/react";
 
 const PersonalInfos = ({ setShowCurrent, setShowNext, employee }) => {
@@ -411,13 +411,13 @@ const ParcInfos = ({ setShowCurrent, setShowNext, employee }) => {
                     (employee.imprimante_multi_marque = e.target.value)
                   }
                 >
-                  {imprimenteMarques.map((imprimenteMarque, index) => (
+                  {imprimanteMarques.map((imprimanteMarque, index) => (
                     <option
                       key={index}
                       className="text-[12px]"
-                      value={imprimenteMarque}
+                      value={imprimanteMarque}
                     >
-                      {imprimenteMarque}
+                      {imprimanteMarque}
                     </option>
                   ))}
                 </select>
@@ -545,13 +545,13 @@ const ParcInfos = ({ setShowCurrent, setShowNext, employee }) => {
                     (employee.imprimante_simple_marque = e.target.value)
                   }
                 >
-                  {imprimenteMarques.map((imprimenteMarque, index) => (
+                  {imprimanteMarques.map((imprimanteMarque, index) => (
                     <option
                       key={index}
                       className="text-[12px]"
-                      value={imprimenteMarque}
+                      value={imprimanteMarque}
                     >
-                      {imprimenteMarque}
+                      {imprimanteMarque}
                     </option>
                   ))}
                 </select>
@@ -679,13 +679,13 @@ const ParcInfos = ({ setShowCurrent, setShowNext, employee }) => {
                     (employee.imprimante_thermique_marque = e.target.value)
                   }
                 >
-                  {imprimenteMarques.map((imprimenteMarque, index) => (
+                  {imprimanteMarques.map((imprimanteMarque, index) => (
                     <option
                       key={index}
                       className="text-[12px]"
-                      value={imprimenteMarque}
+                      value={imprimanteMarque}
                     >
-                      {imprimenteMarque}
+                      {imprimanteMarque}
                     </option>
                   ))}
                 </select>
@@ -809,7 +809,7 @@ const ResSec = ({ setShowCurrent, setShowNext, employee, session }) => {
   //////////////////////////////////////////////////////////////////////////////////////
   const handleSubmit = async () => {
     if (secCheck) employee.securisation = "oui";
-    else employee.securisation = "non"
+    else employee.securisation = "non";
     employee.ajouté_par = session.user.username;
     const currentDate = new Date();
     employee.date_ajout = currentDate.toISOString().split("T")[0];
@@ -1017,43 +1017,43 @@ const AddEmpoyee = ({ showAdd, setShowAdd }) => {
   }, []);
   return (
     <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="backdrop relative"
-        >
-          <div ref={ref}>
-            <div className=" scale-90 box absolute lg:top-24 xl:top-36 left-[20%] lg:w-[62%] xl:w-[50%] xl:left-[25%] h-[600px] rounded-xl overflow-hidden">
-              {step1 && (
-                <PersonalInfos
-                  setShowCurrent={setStep1}
-                  setShowNext={setStep2}
-                  employee={employee}
-                />
-              )}
-              {step2 && (
-                <ParcInfos
-                  setShowCurrent={setStep2}
-                  setShowNext={setStep3}
-                  employee={employee}
-                />
-              )}
-              {step3 && (
-                <ResSec
-                  setShowCurrent={setStep3}
-                  setShowNext={setStep4}
-                  session={session}
-                  employee={employee}
-                />
-              )}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="backdrop relative"
+      >
+        <div ref={ref}>
+          <div className=" scale-90 box absolute lg:top-24 xl:top-36 left-[20%] lg:w-[62%] xl:w-[50%] xl:left-[25%] h-[600px] rounded-xl overflow-hidden">
+            {step1 && (
+              <PersonalInfos
+                setShowCurrent={setStep1}
+                setShowNext={setStep2}
+                employee={employee}
+              />
+            )}
+            {step2 && (
+              <ParcInfos
+                setShowCurrent={setStep2}
+                setShowNext={setStep3}
+                employee={employee}
+              />
+            )}
+            {step3 && (
+              <ResSec
+                setShowCurrent={setStep3}
+                setShowNext={setStep4}
+                session={session}
+                employee={employee}
+              />
+            )}
 
-              {step4 && (
-                <Succès setShowCurrent={setStep4} setShowAdd={setShowAdd} />
-              )}
-            </div>
+            {step4 && (
+              <Succès setShowCurrent={setStep4} setShowAdd={setShowAdd} />
+            )}
           </div>
-        </motion.div>
+        </div>
+      </motion.div>
     </AnimatePresence>
   );
 };

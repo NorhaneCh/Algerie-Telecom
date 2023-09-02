@@ -27,6 +27,6 @@
     "**/*.tsx",
     "src/app/api/users/route.js",
     "src/app/paramaitre/page.jsx"
-  ],
+, "src/lib/tools.js"  ],
   "exclude": ["node_modules"]
 }

@@ -33,5 +33,12 @@
     "file-loader": "^6.2.0",
     "prisma": "^5.1.1",
     "url-loader": "^4.1.1"
+  },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false,
+    "child_process": false,
+    "async_hooks": false
   }
 }
