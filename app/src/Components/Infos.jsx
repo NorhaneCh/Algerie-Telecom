@@ -1,8 +1,9 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
+import { Checkbox } from "./Checkbox";
 import Image from "next/image";
-import { pcMarques, services, imprimenteMarques } from "../Constants";
+import { pcMarques, services, imprimanteMarques } from "../Constants";
 import {
   true_icon,
   false_icon,
@@ -60,13 +61,14 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
     scanner: "",
     adresse_ip: "",
     securisation: "",
-    date_ajout: new Date().toString,
+    date_ajout: "",
     ajouté_par: "",
-    date_modif: new Date().toString,
+    date_modif: "",
     modifié_par: "",
   });
 
   const [modify, setModify] = useState(false);
+  const [pcBureau, setPcBureau] = useState(false);
   let ref1 = useRef();
   let ref2 = useRef();
   const [confirm, setConfirm] = useState(false);
@@ -89,22 +91,6 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
     );
   };
 
-  /////////////////////////////////////////////////////////////////////////////
-  useEffect(() => {
-    let handler = (e) => {
-      if (
-        !ref1.current?.contains(e.target) &&
-        !ref2.current?.contains(e.target)
-      ) {
-        setShowInfos(false);
-        setModify(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => {
-      document.removeEventListener("mousedown", handler);
-    };
-  });
   ///////////////////////////////////////////////////////////////////////////////
   const handleDelete = async (rowId) => {
     fetch(
@@ -131,8 +117,46 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
   /////////////////////////////////////////////////////////////////////////////////
   function handleChange(id) {
     console.log(id);
+    setModify(false);
   }
+  ////////////////////////////////////////////////////////////////////////////////////
+  function handlePcBureau() {
+    if (selectedData.pc_bureau == "oui") {
+      setPcBureau(false);
+      selectedData.pc_bureau = "non";
+    } else {
+      setPcBureau(true);
+      selectedData.pc_bureau = "oui";
+    }
+  }
+  /////////////////////////////////////////////////////////////////////////////////
+  function initializeCheckbox() {
+    if (selectedData.pc_bureau == "oui") {
+      setPcBureau(true);
+      console.log("pc bureau : ", pcBureau);
+    } else {
+      setPcBureau(false);
+    }
+  }
+  /////////////////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    initializeCheckbox();
+    let handler = (e) => {
+      if (
+        !ref1.current?.contains(e.target) &&
+        !ref2.current?.contains(e.target)
+      ) {
+        setShowInfos(false);
+        setModify(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, []);
   //////////////////////////////////////////////////////////////////////////////////////
+
   return (
     <AnimatePresence>
       <motion.div
@@ -147,32 +171,27 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
           ref={ref1}
           className="action-bar absolute bg-white py-6 px-4 top-1/4 right-0 flex flex-col gap-6"
         >
-          <motion.button whileTap={{ y: 4 }}>
+          <motion.button whileTap={{ y: 4 }} whileHover={{ scale: 1.2 }}>
             <Image className="w-[25px]" alt="télécharger" src={download_icon} />
-          </motion.button>
-          <motion.button whileTap={{ y: 4 }}>
-            <Image
-              className="w-[25px]"
-              alt="modifier"
-              src={modify_icon}
-              onClick={() => setModify(true)}
-            />
           </motion.button>
           <motion.button
             whileTap={{ y: 4 }}
-            onClick={handleChange(selectedData.id)}
+            whileHover={{ scale: 1.2 }}
+            onClick={() => setModify(true)}
           >
-            <Image
-              className="w-[25px]"
-              alt="supprimer"
-              src={delete_icon}
-              onClick={() => handleDelete(selectedData.id)}
-            />
+            <Image className="w-[25px]" alt="modifier" src={modify_icon} />
+          </motion.button>
+          <motion.button
+            whileTap={{ y: 4 }}
+            whileHover={{ scale: 1.2 }}
+            onClick={() => handleDelete(selectedData.id)}
+          >
+            <Image className="w-[25px]" alt="supprimer" src={delete_icon} />
           </motion.button>
         </div>
         <div
           ref={ref2}
-          className="bg-white relative px-12 py-6 rounded-xl scale-50 lg:scale-75 xl:scale-90 w-[1250px] h-[900px] lg:ml-[7%] lg:mt-[-5%] xl:ml-[16%] xl:mt-[3%]"
+          className="bg-white relative px-12 py-6 rounded-xl scale-50 lg:scale-75 xl:scale-90 w-[1250px] h-[1100px] lg:ml-[12%] lg:mt-[-7%] xl:ml-[16%] xl:mt-[3%]"
         >
           <motion.div
             whileTap={{ y: 5 }}
@@ -197,6 +216,7 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                   <input
                     type="text"
                     defaultValue={selectedData.nom}
+                    onClick={(e) => (selectedData.nom = e.target.value)}
                     className="textbox rounded-[10px] py-1 px-2 font-medium"
                   />
                 </label>
@@ -210,6 +230,7 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                   <input
                     type="text"
                     defaultValue={selectedData.prenom}
+                    onClick={(e) => (selectedData.prenom = e.target.value)}
                     className="textbox rounded-[10px] py-1 px-2 font-medium"
                   />
                 </label>
@@ -222,6 +243,7 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                 <label className="rounded-[40px] flex flex-col text-[15px] w-[127px]">
                   <select
                     defaultValue={selectedData.service}
+                    onClick={(e) => (selectedData.service = e.target.value)}
                     className="textbox rounded-[10px] py-1 px-2 font-medium"
                   >
                     {services.map((service) => (
@@ -246,13 +268,16 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                       <Image alt="frame" src={true_icon} />
                     )}
                   </div>
-                  <input
+                  <button
                     className={`${modify ? "visible" : "invisible"}`}
-                    type="checkbox"
-                  />
+                    onClick={() => handlePcBureau()}
+                  >
+                    <Checkbox boxchecked={pcBureau} />
+                  </button>
+
                   <p className="font-semibold">Pc Bureau</p>
                 </div>
-                {selectedData.pc_bureau == "oui" && (
+                {pcBureau && (
                   <div className="flex flex-row gap-6 ml-9">
                     <div className="flex flex-col gap-1 items-center text-center">
                       <p>Marque</p>
@@ -555,14 +580,14 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                 )}
               </div>
               {/*------------------------------------------------*/}
-              {/*--------------Imprimente Multifonctions-----------*/}
+              {/*--------------Imprimante Multifonctions-----------*/}
               <div>
                 <div className="flex flex-row gap-2">
                   <div className={`${modify ? "hidden" : "flex"}`}>
-                    {selectedData.imprimente_multifonctions == "non" && (
+                    {selectedData.imprimante_multifonctions == "non" && (
                       <Image alt="frame" src={false_icon} />
                     )}
-                    {selectedData.imprimente_multifonctions == "oui" && (
+                    {selectedData.imprimante_multifonctions == "oui" && (
                       <Image alt="frame" src={true_icon} />
                     )}
                   </div>
@@ -570,29 +595,29 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                     className={`${modify ? "visible" : "invisible"}`}
                     type="checkbox"
                   />
-                  <p className="font-semibold">Imprimente Multifonctions</p>
+                  <p className="font-semibold">Imprimante Multifonctions</p>
                 </div>
-                {selectedData.imprimente_multifonctions == "oui" && (
+                {selectedData.imprimante_multifonctions == "oui" && (
                   <div className="flex flex-row gap-6 ml-9">
                     <div className="flex flex-col gap-1 items-center text-center">
                       <p>Marque</p>
                       {!modify && (
                         <div className="py-2 w-[90px] bg-light-blue">
-                          <p>{selectedData.imprimente_multi_marque}</p>
+                          <p>{selectedData.imprimante_multi_marque}</p>
                         </div>
                       )}
                       {modify && (
                         <label className="rounded-[40px] flex flex-col text-[15px] w-[127px]">
                           <select
-                            defaultValue={selectedData.imprimente_multi_marque}
+                            defaultValue={selectedData.imprimante_multi_marque}
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           >
-                            {imprimenteMarques.map((imprimenteMarque) => (
+                            {imprimanteMarques.map((imprimanteMarque) => (
                               <option
                                 className="text-[12px]"
-                                value={imprimenteMarque}
+                                value={imprimanteMarque}
                               >
-                                {imprimenteMarque}
+                                {imprimanteMarque}
                               </option>
                             ))}
                           </select>
@@ -603,14 +628,14 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                       <p>Model</p>
                       {!modify && (
                         <div className="py-2 w-[100px] bg-light-blue">
-                          <p>{selectedData.imprimente_multi_model}</p>
+                          <p>{selectedData.imprimante_multi_model}</p>
                         </div>
                       )}
                       {modify && (
                         <label className="rounded-[40px] flex flex-col text-[15px] w-[100px]">
                           <input
                             type="text"
-                            defaultValue={selectedData.imprimente_multi_model}
+                            defaultValue={selectedData.imprimante_multi_model}
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           />
                         </label>
@@ -620,14 +645,14 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                       <p>NS</p>
                       {!modify && (
                         <div className="py-2 w-[150px] bg-light-blue">
-                          <p>{selectedData.imprimente_multi_ns}</p>
+                          <p>{selectedData.imprimante_multi_ns}</p>
                         </div>
                       )}
                       {modify && (
                         <label className="rounded-[40px] flex flex-col text-[15px] w-[150px]">
                           <input
                             type="text"
-                            defaultValue={selectedData.imprimente_multi_ns}
+                            defaultValue={selectedData.imprimante_multi_ns}
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           />
                         </label>
@@ -637,14 +662,14 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                       <p>Immo</p>
                       {!modify && (
                         <div className="py-2 w-[150px] bg-light-blue">
-                          <p>{selectedData.imprimente_multi_immo}</p>
+                          <p>{selectedData.imprimante_multi_immo}</p>
                         </div>
                       )}
                       {modify && (
                         <label className="rounded-[40px] flex flex-col text-[15px] w-[150px]">
                           <input
                             type="text"
-                            defaultValue={selectedData.imprimente_multi_immo}
+                            defaultValue={selectedData.imprimante_multi_immo}
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           />
                         </label>
@@ -653,17 +678,15 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                     <div className="flex flex-col gap-1 items-center text-center">
                       <p>Type Config</p>
                       {!modify && (
-                        <div className="py-2 w-[90px] bg-light-blue">
-                          <p>
-                            {selectedData.imprimente_multi_type_configuration}
-                          </p>
+                        <div className="py-2 w-[120px] bg-light-blue">
+                          <p>{selectedData.imprimante_multi_type_config}</p>
                         </div>
                       )}
                       {modify && (
                         <label className="rounded-[40px] flex flex-col text-[15px] w-[140px]">
                           <select
                             defaultValue={
-                              selectedData.imprimente_multi_type_configuration
+                              selectedData.imprimante_multi_type_config
                             }
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           >
@@ -682,7 +705,7 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                       <p>Adresse IP</p>
                       {!modify && (
                         <div className="py-2 w-[150px] bg-light-blue">
-                          <p>{selectedData.imprimente_multi_adresse_ip}</p>
+                          <p>{selectedData.imprimante_multi_adresse_ip}</p>
                         </div>
                       )}
                       {modify && (
@@ -690,7 +713,7 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                           <input
                             type="text"
                             defaultValue={
-                              selectedData.imprimente_multi_adresse_ip
+                              selectedData.imprimante_multi_adresse_ip
                             }
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           />
@@ -701,13 +724,13 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                       <p>Etat</p>
                       {!modify && (
                         <div className="py-2 w-[140px] bg-light-blue">
-                          <p>{selectedData.imprimente_multi_etat}</p>
+                          <p>{selectedData.imprimante_multi_etat}</p>
                         </div>
                       )}
                       {modify && (
                         <label className="rounded-[40px] flex flex-col text-[15px] w-[140px]">
                           <select
-                            defaultValue={selectedData.imprimente_multi_etat}
+                            defaultValue={selectedData.imprimante_multi_etat}
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           >
                             <option className="text-[12px]" value="bon">
@@ -730,14 +753,14 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                 )}
               </div>
               {/*------------------------------------------------*/}
-              {/*--------------Imprimente Thermique-----------*/}
+              {/*--------------Imprimante simple-----------*/}
               <div>
                 <div className="flex flex-row gap-2">
                   <div className={`${modify ? "hidden" : "flex"}`}>
-                    {selectedData.imprimente_thermique == "non" && (
+                    {selectedData.imprimante_simple == "non" && (
                       <Image alt="frame" src={false_icon} />
                     )}
-                    {selectedData.imprimente_thermique == "oui" && (
+                    {selectedData.imprimante_simple == "oui" && (
                       <Image alt="frame" src={true_icon} />
                     )}
                   </div>
@@ -745,31 +768,29 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                     className={`${modify ? "visible" : "invisible"}`}
                     type="checkbox"
                   />
-                  <p className="font-semibold">Imprimente Thermique</p>
+                  <p className="font-semibold">Imprimante Simple</p>
                 </div>
-                {selectedData.imprimente_thermique == "oui" && (
+                {selectedData.imprimante_simple == "oui" && (
                   <div className="flex flex-row gap-6 ml-9">
                     <div className="flex flex-col gap-1 items-center text-center">
                       <p>Marque</p>
                       {!modify && (
                         <div className="py-2 w-[90px] bg-light-blue">
-                          <p>{selectedData.imprimente_thermique_marque}</p>
+                          <p>{selectedData.imprimante_simple_marque}</p>
                         </div>
                       )}
                       {modify && (
                         <label className="rounded-[40px] flex flex-col text-[15px] w-[127px]">
                           <select
-                            defaultValue={
-                              selectedData.imprimente_thermique_marque
-                            }
+                            defaultValue={selectedData.imprimante_simple_marque}
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           >
-                            {imprimenteMarques.map((imprimenteMarque) => (
+                            {imprimanteMarques.map((imprimanteMarque) => (
                               <option
                                 className="text-[12px]"
-                                value={imprimenteMarque}
+                                value={imprimanteMarque}
                               >
-                                {imprimenteMarque}
+                                {imprimanteMarque}
                               </option>
                             ))}
                           </select>
@@ -780,16 +801,14 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                       <p>Model</p>
                       {!modify && (
                         <div className="py-2 w-[100px] bg-light-blue">
-                          <p>{selectedData.imprimente_thermique_model}</p>
+                          <p>{selectedData.imprimante_simple_model}</p>
                         </div>
                       )}
                       {modify && (
                         <label className="rounded-[40px] flex flex-col text-[15px] w-[100px]">
                           <input
                             type="text"
-                            defaultValue={
-                              selectedData.imprimente_thermique_model
-                            }
+                            defaultValue={selectedData.imprimante_simple_model}
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           />
                         </label>
@@ -799,14 +818,14 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                       <p>NS</p>
                       {!modify && (
                         <div className="py-2 w-[150px] bg-light-blue">
-                          <p>{selectedData.imprimente_thermique_ns}</p>
+                          <p>{selectedData.imprimante_simple_ns}</p>
                         </div>
                       )}
                       {modify && (
                         <label className="rounded-[40px] flex flex-col text-[15px] w-[150px]">
                           <input
                             type="text"
-                            defaultValue={selectedData.imprimente_thermique_ns}
+                            defaultValue={selectedData.imprimante_simple_ns}
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           />
                         </label>
@@ -816,16 +835,14 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                       <p>Immo</p>
                       {!modify && (
                         <div className="py-2 w-[150px] bg-light-blue">
-                          <p>{selectedData.imprimente_thermique_immo}</p>
+                          <p>{selectedData.imprimante_simple_immo}</p>
                         </div>
                       )}
                       {modify && (
                         <label className="rounded-[40px] flex flex-col text-[15px] w-[150px]">
                           <input
                             type="text"
-                            defaultValue={
-                              selectedData.imprimente_thermique_immo
-                            }
+                            defaultValue={selectedData.imprimante_simple_immo}
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           />
                         </label>
@@ -834,19 +851,15 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                     <div className="flex flex-col gap-1 items-center text-center">
                       <p>Type Config</p>
                       {!modify && (
-                        <div className="py-2 w-[90px] bg-light-blue">
-                          <p>
-                            {
-                              selectedData.imprimente_thermique_type_configuration
-                            }
-                          </p>
+                        <div className="py-2 w-[120px] bg-light-blue">
+                          <p>{selectedData.imprimante_simple_type_config}</p>
                         </div>
                       )}
                       {modify && (
                         <label className="rounded-[40px] flex flex-col text-[15px] w-[140px]">
                           <select
                             defaultValue={
-                              selectedData.imprimente_thermique_type_configuration
+                              selectedData.imprimante_simple_type_config
                             }
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           >
@@ -864,7 +877,7 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                       <p>Adresse IP</p>
                       {!modify && (
                         <div className="py-2 w-[150px] bg-light-blue rounded-lg">
-                          <p>{selectedData.imprimente_thermique_adresse_ip}</p>
+                          <p>{selectedData.imprimante_simple_adresse_ip}</p>
                         </div>
                       )}
                       {modify && (
@@ -872,7 +885,7 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                           <input
                             type="text"
                             defaultValue={
-                              selectedData.imprimente_thermique_adresse_ip
+                              selectedData.imprimante_simple_adresse_ip
                             }
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           />
@@ -883,14 +896,192 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                       <p>Etat</p>
                       {!modify && (
                         <div className="py-2 w-[140px] bg-light-blue">
-                          <p>{selectedData.imprimente_thermique_etat}</p>
+                          <p>{selectedData.imprimante_simple_etat}</p>
+                        </div>
+                      )}
+                      {modify && (
+                        <label className="rounded-[40px] flex flex-col text-[15px] w-[140px]">
+                          <select
+                            defaultValue={selectedData.imprimante_simple_etat}
+                            className="textbox rounded-[5px] py-1 px-2 font-medium"
+                          >
+                            <option className="text-[12px]" value="bon">
+                              Bon
+                            </option>
+                            <option className="text-[12px]" value="moyen">
+                              Moyen
+                            </option>
+                            <option
+                              className="text-[12px]"
+                              value="hors service"
+                            >
+                              Hors service
+                            </option>
+                          </select>
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+              {/*------------------------------------------------*/}
+              {/*--------------Imprimante Thermique-----------*/}
+              <div>
+                <div className="flex flex-row gap-2">
+                  <div className={`${modify ? "hidden" : "flex"}`}>
+                    {selectedData.imprimante_thermique == "non" && (
+                      <Image alt="frame" src={false_icon} />
+                    )}
+                    {selectedData.imprimante_thermique == "oui" && (
+                      <Image alt="frame" src={true_icon} />
+                    )}
+                  </div>
+                  <input
+                    className={`${modify ? "visible" : "invisible"}`}
+                    type="checkbox"
+                  />
+                  <p className="font-semibold">Imprimante Thermique</p>
+                </div>
+                {selectedData.imprimante_thermique == "oui" && (
+                  <div className="flex flex-row gap-6 ml-9">
+                    <div className="flex flex-col gap-1 items-center text-center">
+                      <p>Marque</p>
+                      {!modify && (
+                        <div className="py-2 w-[90px] bg-light-blue">
+                          <p>{selectedData.imprimante_thermique_marque}</p>
+                        </div>
+                      )}
+                      {modify && (
+                        <label className="rounded-[40px] flex flex-col text-[15px] w-[127px]">
+                          <select
+                            defaultValue={
+                              selectedData.imprimante_thermique_marque
+                            }
+                            className="textbox rounded-[5px] py-1 px-2 font-medium"
+                          >
+                            {imprimanteMarques.map((imprimanteMarque) => (
+                              <option
+                                className="text-[12px]"
+                                value={imprimanteMarque}
+                              >
+                                {imprimanteMarque}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-1 items-center text-center">
+                      <p>Model</p>
+                      {!modify && (
+                        <div className="py-2 w-[100px] bg-light-blue">
+                          <p>{selectedData.imprimante_thermique_model}</p>
+                        </div>
+                      )}
+                      {modify && (
+                        <label className="rounded-[40px] flex flex-col text-[15px] w-[100px]">
+                          <input
+                            type="text"
+                            defaultValue={
+                              selectedData.imprimante_thermique_model
+                            }
+                            className="textbox rounded-[5px] py-1 px-2 font-medium"
+                          />
+                        </label>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-1 items-center text-center">
+                      <p>NS</p>
+                      {!modify && (
+                        <div className="py-2 w-[150px] bg-light-blue">
+                          <p>{selectedData.imprimante_thermique_ns}</p>
+                        </div>
+                      )}
+                      {modify && (
+                        <label className="rounded-[40px] flex flex-col text-[15px] w-[150px]">
+                          <input
+                            type="text"
+                            defaultValue={selectedData.imprimante_thermique_ns}
+                            className="textbox rounded-[5px] py-1 px-2 font-medium"
+                          />
+                        </label>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-1 items-center text-center">
+                      <p>Immo</p>
+                      {!modify && (
+                        <div className="py-2 w-[150px] bg-light-blue">
+                          <p>{selectedData.imprimante_thermique_immo}</p>
+                        </div>
+                      )}
+                      {modify && (
+                        <label className="rounded-[40px] flex flex-col text-[15px] w-[150px]">
+                          <input
+                            type="text"
+                            defaultValue={
+                              selectedData.imprimante_thermique_immo
+                            }
+                            className="textbox rounded-[5px] py-1 px-2 font-medium"
+                          />
+                        </label>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-1 items-center text-center">
+                      <p>Type Config</p>
+                      {!modify && (
+                        <div className="py-2 w-[120px] bg-light-blue">
+                          <p>{selectedData.imprimante_thermique_type_config}</p>
                         </div>
                       )}
                       {modify && (
                         <label className="rounded-[40px] flex flex-col text-[15px] w-[140px]">
                           <select
                             defaultValue={
-                              selectedData.imprimente_thermique_etat
+                              selectedData.imprimante_thermique_type_config
+                            }
+                            className="textbox rounded-[5px] py-1 px-2 font-medium"
+                          >
+                            <option className="text-[12px]" value="reseau">
+                              Réseau
+                            </option>
+                            <option className="text-[12px]" value="usb">
+                              USB
+                            </option>
+                          </select>
+                        </label>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-1 items-center text-center">
+                      <p>Adresse IP</p>
+                      {!modify && (
+                        <div className="py-2 w-[150px] bg-light-blue rounded-lg">
+                          <p>{selectedData.imprimante_thermique_adresse_ip}</p>
+                        </div>
+                      )}
+                      {modify && (
+                        <label className="rounded-[40px] flex flex-col text-[15px] w-[150px]">
+                          <input
+                            type="text"
+                            defaultValue={
+                              selectedData.imprimante_thermique_adresse_ip
+                            }
+                            className="textbox rounded-[5px] py-1 px-2 font-medium"
+                          />
+                        </label>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-1 items-center text-center">
+                      <p>Etat</p>
+                      {!modify && (
+                        <div className="py-2 w-[140px] bg-light-blue">
+                          <p>{selectedData.imprimante_thermique_etat}</p>
+                        </div>
+                      )}
+                      {modify && (
+                        <label className="rounded-[40px] flex flex-col text-[15px] w-[140px]">
+                          <select
+                            defaultValue={
+                              selectedData.imprimante_thermique_etat
                             }
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           >
@@ -948,19 +1139,19 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                   <input
                     type="text"
                     defaultValue={selectedData.adresse_ip}
-                    className="textbox rounded-[10px] py-1 px-2 font-medium"
+                    className="textbox rounded-[7px] py-1 pl-3 font-medium"
                   />
                 </label>
               )}
             </div>
-            <div>
-              <div className="flex flex-row gap-2">
+            <div className="flex flex-row">
+              <div className="flex flex-row gap-2 items-center">
                 <div className={`${modify ? "hidden" : "flex"}`}>
                   {selectedData.securisation == "non" && (
-                    <Image alt="frame" src={false_icon} />
+                    <Image alt="frame" className="h-[25px]" src={false_icon} />
                   )}
                   {selectedData.securisation == "oui" && (
-                    <Image alt="frame" src={true_icon} />
+                    <Image alt="frame" className="h-[25px]" src={true_icon} />
                   )}
                 </div>
 
@@ -969,6 +1160,28 @@ const Infos = ({ setShowInfos, selectedData, setData, data }) => {
                   className={`${modify ? "visible" : "invisible"}`}
                   type="checkbox"
                 />
+              </div>
+              <div className="flex flex-col gap-3 ml-auto">
+                <div className="flex flex-row gap-3">
+                  <div className="flex flex-row gap-1 items-center">
+                    <p className="font-semibold">Ajouté par : </p>
+                    <p>{selectedData.ajouté_par}</p>
+                  </div>
+                  <div className="flex flex-row gap-1 items-center">
+                    <p className="font-semibold">Le : </p>
+                    <p>{selectedData.date_ajout}</p>
+                  </div>
+                </div>
+                <div className="flex flex-row gap-3">
+                  <div className="flex flex-row gap-1 items-center">
+                    <p className="font-semibold">Modifier par : </p>
+                    <p>{selectedData.modifié_par}</p>
+                  </div>
+                  <div className="flex flex-row gap-1 items-center">
+                    <p className="font-semibold">Le : </p>
+                    <p>{selectedData.date_modif}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -19,4 +19,6 @@ model User {
   isAdmin   Boolean @default(false)
   canAdd    Boolean
   canDelete Boolean
+ firstLog Boolean @default(true)
 }
+

@@ -25,7 +25,7 @@ const AppBar = () => {
   return (
     <div className="top-0 z-10 backdrop-blur sticky">
       {session && session.user && (
-        <div className="app-bar flex flex-row p-3 " ref={ref}>
+        <div className="app-bar flex flex-row p-3" ref={ref}>
           <Image className="ml-0 w-[150px]" src={logo} alt="Algérie Télécom" />
           <div className="ml-auto flex flex-row gap-1 items-end justify-center">
             <p className="text-[17px] font-medium">{session.user.lastName}</p>
@@ -45,24 +45,29 @@ const AppBar = () => {
               toggle ? "flex" : "hidden"
             } z-20 absolute top-16 right-4 flex flex-col items-start rounded-lg border-2 border-gray-color bg-white`}
           >
-            <Link href="http://localhost:3000/home">
-              <div
-                className="flex flex-row gap-2 p-3 w-[200px] hover:cursor-pointer hover:bg-secondary"
-                onClick={() => setToggle(false)}
-              >
-                <Image className="w-[20px] h-[20px]" src={home}></Image>
-                <p>Accueil</p>
+            {session && session.user.isAdmin && (
+              <div>
+                <Link href="http://localhost:3000/home">
+                  <div
+                    className="flex flex-row gap-2 p-3 w-[200px] hover:cursor-pointer hover:bg-secondary"
+                    onClick={() => setToggle(false)}
+                  >
+                    <Image className="w-[20px] h-[20px]" src={home}></Image>
+                    <p>Accueil</p>
+                  </div>
+                </Link>
+                <Link href="http://localhost:3000/paramaitre">
+                  <div
+                    className="flex flex-row gap-2 p-3 w-[200px] hover:cursor-pointer hover:bg-secondary"
+                    onClick={() => setToggle(false)}
+                  >
+                    <Image className="w-[20px] h-[20px]" src={settings}></Image>
+                    <p>Paramaitre</p>
+                  </div>
+                </Link>
               </div>
-            </Link>
-            <Link href="http://localhost:3000/paramaitre">
-              <div
-                className="flex flex-row gap-2 p-3 w-[200px] hover:cursor-pointer hover:bg-secondary"
-                onClick={() => setToggle(false)}
-              >
-                <Image className="w-[20px] h-[20px]" src={settings}></Image>
-                <p>Paramaitre</p>
-              </div>
-            </Link>
+            )}
+
             <div
               className="flex flex-row gap-2 p-3 w-[200px] hover:cursor-pointer hover:bg-secondary border-b-2 border-gray-color"
               onClick={signOut}

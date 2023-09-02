@@ -126,3 +126,12 @@ image {
   padding: 8px 15px 8px 15px;
   border-radius: 10px;
 }
+.add-user{
+  width: 120px;
+  font-weight: 500;
+  color: white;
+  background-color: #00cc99;
+  padding: 8px 15px 8px 15px;
+  border-radius: 10px;
+}
+

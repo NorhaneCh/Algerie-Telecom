@@ -1,13 +1,10 @@
+"use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import { pcMarques, services } from "../Constants";
+import { imprimenteMarques, pcMarques, services } from "../Constants";
+import { useSession } from "next-auth/react";
 
-const PersonalInfos = ({
-  setShowCurrent,
-  setShowNext,
-  employee,
-  handleChange,
-}) => {
+const PersonalInfos = ({ setShowCurrent, setShowNext, employee }) => {
   function handleShow() {
     setShowCurrent(false);
     setShowNext(true);
@@ -26,7 +23,7 @@ const PersonalInfos = ({
       className="flex flex-col p-6 items-center gap-9 h-full"
     >
       <p
-        className="absolute bottom-6 right-9 hover:cursor-pointer hover:text-black text-primary"
+        className="absolute bottom-6 right-9 hover:cursor-pointer font-semibold hover:text-black text-primary"
         onClick={handleShow}
       >
         suivant
@@ -37,8 +34,7 @@ const PersonalInfos = ({
           type="text"
           name="nom"
           placeholder="Nom"
-          value={employee.nom}
-          onChange={handleChange}
+          onChange={(e) => (employee.nom = e.target.value)}
           className="textbox rounded-[10px] py-2 px-3 font-medium"
         />
       </label>
@@ -47,16 +43,18 @@ const PersonalInfos = ({
           type="text"
           name="prenom"
           placeholder="Prénom"
-          value={employee.prenom}
-          onChange={handleChange}
+          onChange={(e) => (employee.prenom = e.target.value)}
           className="textbox rounded-[10px] py-2 px-3 font-medium"
         />
       </label>
-      <label className="rounded-[40px] flex flex-col text-[15px] w-[250px]">
+      <label className="rounded-[40px] flex flex-col gap-2 text-[15px] w-[250px]">
+        <p className="ml-2 text-[15px] font-medium">
+          Sélectionner le service :
+        </p>
+
         <select
           className="textbox rounded-[10px] py-2 px-3 font-medium"
-          value={employee.service}
-          onChange={handleChange}
+          onChange={(e) => (employee.service = e.target.value)}
           name="service"
         >
           {services.map((service, i) => (
@@ -70,46 +68,74 @@ const PersonalInfos = ({
   );
 };
 
-const ParcInfos = ({
-  setShowCurrent,
-  setShowNext,
-  setShowPrev,
-  handleChange,
-  employee,
-}) => {
+const ParcInfos = ({ setShowCurrent, setShowNext, employee }) => {
   const [pcBureau, setPcBureau] = useState(false);
   const [pcPortable, setPcPortable] = useState(false);
   const [imprMulti, setImprMulti] = useState(false);
+  const [imprSimple, setImprSimple] = useState(false);
   const [imprTh, setImprTh] = useState(false);
   const [scanner, setScanner] = useState(false);
-  useEffect(() => {
-    setPcBureau(false);
-    employee.pcBureau = "non"
-    console.log("useEffect : ", pcBureau+" "+employee.pcBureau)
-    setPcPortable(false);
-    setImprMulti(false);
-    setImprTh(false);
-    setScanner(false);
-  },[]);
+
   function handleSuiv() {
+    if (pcBureau) employee.pc_bureau = "oui";
+    else {
+      employee.pc_bureau = "non";
+      employee.pc_bureau_marque = "";
+      employee.pc_bureau_model = "";
+      employee.pc_bureau_ns = "";
+      employee.pc_bureau_immo = "";
+      employee.pc_bureau_se = "";
+      employee.pc_bureau_ram = "";
+      employee.pc_bureau_etat = "";
+    }
+    if (pcPortable) employee.pc_portable = "oui";
+    else {
+      employee.pc_portable = "non";
+      employee.pc_portable_marque = "";
+      employee.pc_portable_model = "";
+      employee.pc_portable_ns = "";
+      employee.pc_portable_immo = "";
+      employee.pc_portable_se = "";
+      employee.pc_portable_ram = "";
+      employee.pc_portable_etat = "";
+    }
+    if (imprMulti) employee.imprimante_multifonctions = "oui";
+    else {
+      employee.imprimante_multifonctions = "non";
+      employee.imprimante_multi_marque = "";
+      employee.imprimante_multi_model = "";
+      employee.imprimante_multi_ns = "";
+      employee.imprimante_multi_immo = "";
+      employee.imprimante_multi_type_config = "";
+      employee.imprimante_multi_adresse_ip = "";
+      employee.imprimante_multi_etat = "";
+    }
+    if (imprSimple) employee.imprimante_simple = "oui";
+    else {
+      employee.imprimante_simple = "non";
+      employee.imprimante_simple_marque = "";
+      employee.imprimante_simple_model = "";
+      employee.imprimante_simple_ns = "";
+      employee.imprimante_simple_immo = "";
+      employee.imprimante_simple_type_config = "";
+      employee.imprimante_simple_adresse_ip = "";
+      employee.imprimante_simple_etat = "";
+    }
+    if (imprTh) employee.imprimante_thermique = "oui";
+    else {
+      employee.imprimante_thermique = "non";
+      employee.imprimante_thermique_marque = "";
+      employee.imprimante_thermique_model = "";
+      employee.imprimante_thermique_ns = "";
+      employee.imprimante_thermique_immo = "";
+      employee.imprimante_thermique_type_config = "";
+      employee.imprimante_thermique_adresse_ip = "";
+      employee.imprimante_thermique_etat = "";
+    }
+    if (scanner) employee.scanner = "oui";
+    else employee.scanner = "non";
     setShowCurrent(false);
     setShowNext(true);
-  }
-  function handlePrev() {
-    setShowCurrent(false);
-    setShowPrev(true);
-  }
-  function handlePcBureau() {
-    console.log("before : ", pcBureau + " " + employee.pcBureau);
-    setPcBureau(!pcBureau);
-    
-    
-    if (!pcBureau) {
-      employee.pcBureau = "oui";
-    } else {
-      employee.pcBureau = "non";
-    }
-    console.log("after : ", !pcBureau + " " + employee.pcBureau);
   }
   return (
     <motion.div
@@ -125,16 +151,10 @@ const ParcInfos = ({
       className="relative flex flex-col p-6 gap-2 h-full"
     >
       <p
-        className="absolute bottom-6 right-9 hover:cursor-pointer text-primary"
+        className="absolute bottom-6 right-9 hover:cursor-pointer font-semibold hover:text-black text-primary"
         onClick={handleSuiv}
       >
         suivant
-      </p>
-      <p
-        className="absolute bottom-6 left-9 hover:cursor-pointer text-primary"
-        onClick={handlePrev}
-      >
-        previous
       </p>
       <p className="text-[24px] font-medium text-center">Parc Informatique</p>
       {/*---------------Pc Bureau---------------------*/}
@@ -143,7 +163,7 @@ const ParcInfos = ({
           <input
             type="checkbox"
             id="pcBureau"
-            onChange={() => setPcBureau(handlePcBureau)}
+            onChange={() => setPcBureau(!pcBureau)}
           />
           <label for="pcBureau" className="text-[15px] font-semibold">
             Pc Bureau
@@ -156,6 +176,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[100px]">
                 <select
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
+                  name="pc_bureau_marque"
                   onChange={(e) => (employee.pc_bureau_marque = e.target.value)}
                 >
                   {pcMarques.map((pcMarque, index) => (
@@ -175,7 +196,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.pc_bureau_model}
+                  name="pc_bureau_model"
                   onChange={(e) => (employee.pc_bureau_model = e.target.value)}
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -186,7 +207,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.pc_bureau_ns}
+                  name="pc_bureau_ns"
                   onChange={(e) => (employee.pc_bureau_ns = e.target.value)}
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -197,7 +218,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.pc_bureau_immo}
+                  name="pc_bureau_immo"
                   onChange={(e) => (employee.pc_bureau_immo = e.target.value)}
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -208,7 +229,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[100px]">
                 <input
                   type="text"
-                  defaultValue={employee.pc_bureau_se}
+                  name="pc_bureau_se"
                   onChange={(e) => (employee.pc_bureau_se = e.target.value)}
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -219,7 +240,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[100px]">
                 <input
                   type="text"
-                  defaultValue={employee.pc_bureau_ram}
+                  name="pc_bureau_ram"
                   onChange={(e) => (employee.pc_bureau_ram = e.target.value)}
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -229,9 +250,11 @@ const ParcInfos = ({
               <p className="text-[15px]">Etat</p>
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <select
+                  name="pc_bureau_etat"
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                   onChange={(e) => (employee.pc_bureau_etat = e.target.value)}
                 >
+                  <option className="text-[12px]" value="bon"></option>
                   <option className="text-[12px]" value="bon">
                     Bon
                   </option>
@@ -265,6 +288,7 @@ const ParcInfos = ({
               <p className="text-[15px]">Marque</p>
               <label className="rounded-[40px] flex flex-col text-[12px] w-[100px]">
                 <select
+                  name="pc_portable_marque"
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                   onChange={(e) =>
                     (employee.pc_portable_marque = e.target.value)
@@ -287,7 +311,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.pc_portable_model}
+                  name="pc_portable_model"
                   onChange={(e) =>
                     (employee.pc_portable_model = e.target.value)
                   }
@@ -300,7 +324,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.pc_portable_ns}
+                  name="pc_portable_ns"
                   onChange={(e) => (employee.pc_portable_ns = e.target.value)}
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -311,7 +335,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.pc_portable_immo}
+                  name="pc_portable_immo"
                   onChange={(e) => (employee.pc_portable_immo = e.target.value)}
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -322,7 +346,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[100px]">
                 <input
                   type="text"
-                  defaultValue={employee.pc_portable_se}
+                  name="pc_portable_se"
                   onChange={(e) => (employee.pc_portable_se = e.target.value)}
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -333,7 +357,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[100px]">
                 <input
                   type="text"
-                  defaultValue={employee.pc_portable_ram}
+                  name="pc_portable_ram"
                   onChange={(e) => (employee.pc_portable_ram = e.target.value)}
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -344,8 +368,10 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <select
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
+                  name="pc_portable_etat"
                   onChange={(e) => (employee.pc_portable_etat = e.target.value)}
                 >
+                  <option className="text-[12px]" value="bon"></option>
                   <option className="text-[12px]" value="bon">
                     Bon
                   </option>
@@ -361,7 +387,7 @@ const ParcInfos = ({
           </div>
         )}
       </div>
-      {/*---------------Imprimente Multifonctions---------------------*/}
+      {/*---------------Imprimante Multifonctions---------------------*/}
       <div>
         <div className="flex flex-row gap-2">
           <input
@@ -370,7 +396,7 @@ const ParcInfos = ({
             onChange={() => setImprMulti(!imprMulti)}
           />
           <label for="imprMulti" className="text-[15px] font-semibold">
-            Imprimente Multifonctions
+            Imprimante Multifonctions
           </label>
         </div>
         {imprMulti && (
@@ -379,18 +405,19 @@ const ParcInfos = ({
               <p className="text-[15px]">Marque</p>
               <label className="rounded-[40px] flex flex-col text-[12px] w-[100px]">
                 <select
+                  name="imprimante_multi_marque"
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                   onChange={(e) =>
                     (employee.imprimante_multi_marque = e.target.value)
                   }
                 >
-                  {pcMarques.map((pcMarque, index) => (
+                  {imprimenteMarques.map((imprimenteMarque, index) => (
                     <option
                       key={index}
                       className="text-[12px]"
-                      value={pcMarque}
+                      value={imprimenteMarque}
                     >
-                      {pcMarque}
+                      {imprimenteMarque}
                     </option>
                   ))}
                 </select>
@@ -401,7 +428,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.imprimante_multi_model}
+                  name="imprimante_multi_model"
                   onChange={(e) =>
                     (employee.imprimante_multi_model = e.target.value)
                   }
@@ -414,7 +441,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.imprimante_multi_ns}
+                  name="imprimante_multi_ns"
                   onChange={(e) =>
                     (employee.imprimante_multi_ns = e.target.value)
                   }
@@ -427,7 +454,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.imprimante_multi_immo}
+                  name="imprimante_multi_immo"
                   onChange={(e) =>
                     (employee.imprimante_multi_immo = e.target.value)
                   }
@@ -443,7 +470,9 @@ const ParcInfos = ({
                   onChange={(e) =>
                     (employee.imprimante_multi_type_config = e.target.value)
                   }
+                  name="imprimante_multi_type_config"
                 >
+                  <option className="text-[12px]" value=""></option>
                   <option className="text-[12px]" value="reseau">
                     Réseau
                   </option>
@@ -458,7 +487,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[120px]">
                 <input
                   type="text"
-                  defaultValue={employee.imprimante_multi_adresse_ip}
+                  name="imprimante_multi_adresse_ip"
                   onChange={(e) =>
                     (employee.imprimante_multi_adresse_ip = e.target.value)
                   }
@@ -470,11 +499,13 @@ const ParcInfos = ({
               <p className="text-[15px]">Etat</p>
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <select
+                  name="imprimante_multi_etat"
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                   onChange={(e) =>
                     (employee.imprimante_multi_etat = e.target.value)
                   }
                 >
+                  <option className="text-[12px]" value="bon"></option>
                   <option className="text-[12px]" value="bon">
                     Bon
                   </option>
@@ -490,36 +521,37 @@ const ParcInfos = ({
           </div>
         )}
       </div>
-      {/*---------------Imprimente Simple---------------------*/}
+      {/*---------------Imprimante Simple---------------------*/}
       <div>
         <div className="flex flex-row gap-2">
           <input
             type="checkbox"
             id="imprSimple"
-            onChange={() => setImprTh(!imprTh)}
+            onChange={() => setImprSimple(!imprSimple)}
           />
           <label for="imprSimple" className="text-[15px] font-semibold">
-            Imprimente Simple
+            Imprimante Simple
           </label>
         </div>
-        {imprTh && (
+        {imprSimple && (
           <div className="ml-4 flex flex-row gap-4">
             <div className="flex flex-col items-center">
               <p className="text-[15px]">Marque</p>
               <label className="rounded-[40px] flex flex-col text-[12px] w-[100px]">
                 <select
+                  name="imprimante_simple_marque"
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                   onChange={(e) =>
-                    (employee.imprimante_thermique_marque = e.target.value)
+                    (employee.imprimante_simple_marque = e.target.value)
                   }
                 >
-                  {pcMarques.map((pcMarque, index) => (
+                  {imprimenteMarques.map((imprimenteMarque, index) => (
                     <option
                       key={index}
                       className="text-[12px]"
-                      value={pcMarque}
+                      value={imprimenteMarque}
                     >
-                      {pcMarque}
+                      {imprimenteMarque}
                     </option>
                   ))}
                 </select>
@@ -530,9 +562,9 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.imprimante_thermique_model}
+                  name="imprimante_simple_model"
                   onChange={(e) =>
-                    (employee.imprimante_thermique_model = e.target.value)
+                    (employee.imprimante_simple_model = e.target.value)
                   }
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -543,9 +575,9 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.imprimante_thermique_ns}
+                  name="imprimante_simple_ns"
                   onChange={(e) =>
-                    (employee.imprimante_thermique_ns = e.target.value)
+                    (employee.imprimante_simple_ns = e.target.value)
                   }
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -556,9 +588,9 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.imprimante_thermique_immo}
+                  name="imprimante_simple_immo"
                   onChange={(e) =>
-                    (employee.imprimante_thermique_immo = e.target.value)
+                    (employee.imprimante_simple_immo = e.target.value)
                   }
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -568,11 +600,13 @@ const ParcInfos = ({
               <p className="text-[15px]">Configuration</p>
               <label className="rounded-[40px] flex flex-col text-[12px] w-[120px]">
                 <select
+                  name="imprimante_simple_type_config"
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                   onChange={(e) =>
-                    (employee.imprimante_thermique_type_config = e.target.value)
+                    (employee.imprimante_simple_type_config = e.target.value)
                   }
                 >
+                  <option className="text-[12px]" value=""></option>
                   <option className="text-[12px]" value="reseau">
                     Réseau
                   </option>
@@ -587,9 +621,9 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[120px]">
                 <input
                   type="text"
-                  defaultValue={employee.imprimante_thermique_adresse_ip}
+                  name="imprimante_thermique_adresse_ip"
                   onChange={(e) =>
-                    (employee.imprimante_thermique_adresse_ip = e.target.value)
+                    (employee.imprimante_simple_adresse_ip = e.target.value)
                   }
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
@@ -601,9 +635,11 @@ const ParcInfos = ({
                 <select
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                   onChange={(e) =>
-                    (employee.imprimante_thermique_etat = e.target.value)
+                    (employee.imprimante_simple_etat = e.target.value)
                   }
+                  name="imprimante_simple_etat"
                 >
+                  <option className="text-[12px]" value="bon"></option>
                   <option className="text-[12px]" value="bon">
                     Bon
                   </option>
@@ -619,7 +655,7 @@ const ParcInfos = ({
           </div>
         )}
       </div>
-      {/*---------------Imprimente Thermique---------------------*/}
+      {/*---------------Imprimante Thermique---------------------*/}
       <div>
         <div className="flex flex-row gap-2">
           <input
@@ -628,7 +664,7 @@ const ParcInfos = ({
             onChange={() => setImprTh(!imprTh)}
           />
           <label for="imprTh" className="text-[15px] font-semibold">
-            Imprimente Thermique
+            Imprimante Thermique
           </label>
         </div>
         {imprTh && (
@@ -637,18 +673,19 @@ const ParcInfos = ({
               <p className="text-[15px]">Marque</p>
               <label className="rounded-[40px] flex flex-col text-[12px] w-[100px]">
                 <select
+                  name="imprimante_thermique_marque"
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                   onChange={(e) =>
                     (employee.imprimante_thermique_marque = e.target.value)
                   }
                 >
-                  {pcMarques.map((pcMarque, index) => (
+                  {imprimenteMarques.map((imprimenteMarque, index) => (
                     <option
                       key={index}
                       className="text-[12px]"
-                      value={pcMarque}
+                      value={imprimenteMarque}
                     >
-                      {pcMarque}
+                      {imprimenteMarque}
                     </option>
                   ))}
                 </select>
@@ -659,10 +696,10 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.imprimante_thermique_model}
                   onChange={(e) =>
                     (employee.imprimante_thermique_model = e.target.value)
                   }
+                  name="imprimante_thermique_model"
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
               </label>
@@ -672,10 +709,10 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.imprimante_thermique_ns}
                   onChange={(e) =>
                     (employee.imprimante_thermique_ns = e.target.value)
                   }
+                  name="imprimante_thermique_ns"
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
               </label>
@@ -685,10 +722,10 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <input
                   type="text"
-                  defaultValue={employee.imprimante_thermique_immo}
                   onChange={(e) =>
                     (employee.imprimante_thermique_immo = e.target.value)
                   }
+                  name="imprimante_thermique_immo"
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                 />
               </label>
@@ -697,11 +734,13 @@ const ParcInfos = ({
               <p className="text-[15px]">Configuration</p>
               <label className="rounded-[40px] flex flex-col text-[12px] w-[120px]">
                 <select
+                  name="imprimante_thermique_type_config"
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                   onChange={(e) =>
                     (employee.imprimante_thermique_type_config = e.target.value)
                   }
                 >
+                  <option className="text-[12px]" value=""></option>
                   <option className="text-[12px]" value="reseau">
                     Réseau
                   </option>
@@ -716,7 +755,7 @@ const ParcInfos = ({
               <label className="rounded-[40px] flex flex-col text-[12px] w-[120px]">
                 <input
                   type="text"
-                  defaultValue={employee.imprimante_thermique_adresse_ip}
+                  name="imprimante_thermique_adresse_ip"
                   onChange={(e) =>
                     (employee.imprimante_thermique_adresse_ip = e.target.value)
                   }
@@ -728,11 +767,13 @@ const ParcInfos = ({
               <p className="text-[15px]">Etat</p>
               <label className="rounded-[40px] flex flex-col text-[12px] w-[110px]">
                 <select
+                  name="imprimante_thermique_etat"
                   className="textbox rounded-[10px] py-1 pl-2 font-medium"
                   onChange={(e) =>
                     (employee.imprimante_thermique_etat = e.target.value)
                   }
                 >
+                  <option className="text-[12px]" value="bon"></option>
                   <option className="text-[12px]" value="bon">
                     Bon
                   </option>
@@ -763,16 +804,42 @@ const ParcInfos = ({
   );
 };
 
-const ResSec = ({ setShowCurrent, setShowNext, employee, setShowPrev }) => {
+const ResSec = ({ setShowCurrent, setShowNext, employee, session }) => {
   const [secCheck, setSecCheck] = useState(false);
-  const handleSubmit = async (e) => {
-    setShowCurrent(false);
-    setShowNext(true);
+  //////////////////////////////////////////////////////////////////////////////////////
+  const handleSubmit = async () => {
+    if (secCheck) employee.securisation = "oui";
+    else employee.securisation = "non"
+    employee.ajouté_par = session.user.username;
+    const currentDate = new Date();
+    employee.date_ajout = currentDate.toISOString().split("T")[0];
+    {
+      fetch(
+        "https://sheet.best/api/sheets/6ea63e6c-960d-41c9-8abd-9902a235fa74",
+        {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(employee),
+        }
+      )
+        .then((r) => r.json())
+        .then(() => {
+          // The response comes here
+          console.log(employee);
+        })
+        .then(() => setShowCurrent(false))
+        .then(() => setShowNext(true))
+        .catch((error) => {
+          // Errors are reported there
+          console.log(error);
+        });
+    }
   };
-  function handlePrev() {
-    setShowCurrent(false);
-    setShowPrev(true);
-  }
+
+  //////////////////////////////////////////////////////////////////////////////////
   return (
     <motion.div
       initial={{ x: 600, opacity: 0 }}
@@ -787,23 +854,17 @@ const ResSec = ({ setShowCurrent, setShowNext, employee, setShowPrev }) => {
       className="relative flex flex-col p-6 items-center gap-12 h-full"
     >
       <p
-        className="absolute bottom-6 right-9 hover:cursor-pointer text-primary"
+        className="absolute bottom-6 right-9 hover:cursor-pointer font-semibold hover:text-black text-primary"
         onClick={handleSubmit}
       >
         ajouter
-      </p>
-      <p
-        className="absolute bottom-6 left-9 hover:cursor-pointer text-primary"
-        onClick={handlePrev}
-      >
-        previous
       </p>
       <p className="text-[24px] font-medium">Réseau & Sécurisation</p>
       <label className="rounded-[40px] flex flex-col text-[15px] w-[250px] mt-9">
         <input
           type="text"
+          name="adresse_ip"
           placeholder="Adresse IP"
-          defaultValue={employee.adresse_ip}
           onChange={(e) => (employee.adresse_ip = e.target.value)}
           className="textbox rounded-[10px] py-2 px-3 font-medium"
         />
@@ -880,6 +941,7 @@ const Succès = ({ setShowAdd }) => {
 };
 
 const AddEmpoyee = ({ showAdd, setShowAdd }) => {
+  const { data: session } = useSession();
   const [employee, setEmployee] = useState({
     nom: "",
     prenom: "",
@@ -927,15 +989,11 @@ const AddEmpoyee = ({ showAdd, setShowAdd }) => {
     scanner: "",
     adresse_ip: "",
     securisation: "",
-    date_ajout: new Date().toString,
+    date_ajout: "",
     ajouté_par: "",
-    date_modif: new Date().toString,
+    date_modif: "",
     modifié_par: "",
   });
-  const handleChange = (e) => {
-    setEmployee({ ...employee, [e.target.name]: e.target.value });
-  };
-
   const [step1, setStep1] = useState(true);
   const [step2, setStep2] = useState(false);
   const [step3, setStep3] = useState(false);
@@ -950,7 +1008,6 @@ const AddEmpoyee = ({ showAdd, setShowAdd }) => {
         setStep4(false);
         setShowAdd(false);
         setEmployee({ ...employee, [e.target.name]: "" });
-        console.log("employee  : ", employee);
       }
     };
     document.addEventListener("mousedown", handler);
@@ -960,7 +1017,6 @@ const AddEmpoyee = ({ showAdd, setShowAdd }) => {
   }, []);
   return (
     <AnimatePresence>
-      {showAdd && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -968,20 +1024,18 @@ const AddEmpoyee = ({ showAdd, setShowAdd }) => {
           className="backdrop relative"
         >
           <div ref={ref}>
-            <div className="box absolute lg:top-24 xl:top-36 left-[20%] lg:w-[62%] xl:w-[50%] xl:left-[25%] h-[600px] rounded-xl overflow-hidden">
+            <div className=" scale-90 box absolute lg:top-24 xl:top-36 left-[20%] lg:w-[62%] xl:w-[50%] xl:left-[25%] h-[600px] rounded-xl overflow-hidden">
               {step1 && (
                 <PersonalInfos
                   setShowCurrent={setStep1}
                   setShowNext={setStep2}
                   employee={employee}
-                  handleChange={handleChange}
                 />
               )}
               {step2 && (
                 <ParcInfos
                   setShowCurrent={setStep2}
                   setShowNext={setStep3}
-                  setShowPrev={setStep1}
                   employee={employee}
                 />
               )}
@@ -989,7 +1043,7 @@ const AddEmpoyee = ({ showAdd, setShowAdd }) => {
                 <ResSec
                   setShowCurrent={setStep3}
                   setShowNext={setStep4}
-                  setShowPrev={setStep2}
+                  session={session}
                   employee={employee}
                 />
               )}
@@ -1000,7 +1054,6 @@ const AddEmpoyee = ({ showAdd, setShowAdd }) => {
             </div>
           </div>
         </motion.div>
-      )}
     </AnimatePresence>
   );
 };

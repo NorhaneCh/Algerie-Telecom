@@ -12,6 +12,7 @@
     "@prisma/client": "^5.1.1",
     "autoprefixer": "10.4.15",
     "bcrypt": "^5.1.0",
+    "circular-json": "^0.5.9",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.16",
     "framer-motion": "^10.16.0",

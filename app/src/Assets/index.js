@@ -13,13 +13,15 @@ import instagram from "./socials/instagram.png";
 import youtube from "./socials/youtube.png";
 import linkedin from "./socials/linkedin.png";
 import logo from "./logo.png";
-import settings from "./settings.png"
-import logout from "./Logout.png"
-import true_icon from "./true_icon.png"
-import false_icon from "./false_icon.png"
-import download_icon from "./download_icon.png"
-import save_icon from "./save_icon.png"
-import home from "./home.png"
+import settings from "./settings.png";
+import logout from "./Logout.png";
+import true_icon from "./true_icon.png";
+import false_icon from "./false_icon.png";
+import download_icon from "./download_icon.png";
+import save_icon from "./save_icon.png";
+import home from "./home.png";
+import delete_icon_white from "./delete_icon_white.png";
+import user_icon from "./user.png"
 
 export {
   algerie_telecom,
@@ -43,5 +45,7 @@ export {
   false_icon,
   download_icon,
   save_icon,
-  home
+  home,
+  delete_icon_white,
+  user_icon
 };

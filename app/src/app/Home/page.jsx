@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Table from "../../Components/Table";
 import Infos from "../../Components/Infos";
 import AddEmpoyee from "../../Components/AddEmpoyee";
+import UpdatePass from "../../Components/UpdatePass";
 import Image from "next/image";
 import { styles } from "../../styles";
 import { motion } from "framer-motion";
@@ -17,6 +18,7 @@ const HomePage = () => {
   const [showInfos, setShowInfos] = useState(false);
   const [selectedData, setSelectedData] = useState();
   const [showAdd, setShowAdd] = useState(false);
+  const [showPass, setShowPass] = useState(false);
   const { data: session } = useSession();
 
   const getData = async () => {
@@ -51,16 +53,16 @@ const HomePage = () => {
         row.pc_portable_model
           .toLowerCase()
           .includes(event.target.value.toLowerCase()) ||
-        row.imprimente_multi_marque
+        row.imprimante_multi_marque
           .toLowerCase()
           .includes(event.target.value.toLowerCase()) ||
-        row.imprimente_multi_model
+        row.imprimante_multi_model
           .toLowerCase()
           .includes(event.target.value.toLowerCase()) ||
-        row.imprimente_thermique_marque
+        row.imprimante_thermique_marque
           .toLowerCase()
           .includes(event.target.value.toLowerCase()) ||
-        row.imprimente_thermique_model
+        row.imprimante_thermique_model
           .toLowerCase()
           .includes(event.target.value.toLowerCase()) ||
         row.adresse_ip.toLowerCase().includes(event.target.value.toLowerCase())
@@ -69,77 +71,80 @@ const HomePage = () => {
   }
 
   useEffect(() => {
-    console.log("session : ", session);
     getData();
-  }, [showInfos]);
+  }, [AddEmpoyee]);
   return (
     <div className={`relative home min-h-screen ${styles.paddingX}`}>
-      {showInfos && (
-        <Infos
-          setShowInfos={setShowInfos}
-          selectedData={selectedData}
-          setData={setData}
-          data={data}
-        />
-      )}
+      {!(session && session.user.firstLog) && (
+        <div>
+          {showInfos && (
+            <Infos
+              setShowInfos={setShowInfos}
+              selectedData={selectedData}
+              setData={setData}
+              data={data}
+            />
+          )}
+          {showAdd && <AddEmpoyee setShowAdd={setShowAdd} />}
 
-      <AddEmpoyee showAdd={showAdd} setShowAdd={setShowAdd} />
-
-      <div className={`py-20 ${styles.paddingX}`}>
-        <div className="flex flex-row">
-          <p className="text-[25px] font-semibold">Liste des employés</p>
-          <div className="ml-auto">
-            {session && session.user.canAdd && (
-              <motion.button
-                whileHover={{
-                  y: -5,
-                  boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)",
+          <div className={`py-20 ${styles.paddingX}`}>
+            <div className="flex flex-row">
+              <p className="text-[25px] font-semibold">Liste des employés</p>
+              <div className="ml-auto">
+                {session && session.user.canAdd && (
+                  <motion.button
+                    whileHover={{
+                      y: -5,
+                      boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)",
+                    }}
+                    whileTap={{ y: 0 }}
+                    onClick={() => setShowAdd(true)}
+                    className="add-btn flex flex-row gap-2 items-center justify-center"
+                  >
+                    <Image
+                      className="w-[20px]"
+                      alt="ajouter"
+                      src={add_frame}
+                    ></Image>
+                    <p>Ajouter</p>
+                  </motion.button>
+                )}
+              </div>
+            </div>
+            <div className="flex justify-center mb-12">
+              <motion.label
+                animate={{
+                  boxShadow: "0px 10px 15px rgba(0, 0, 0, 0.2)",
                 }}
-                whileTap={{ y: 0 }}
-                onClick={() => setShowAdd(true)}
-                className="add-btn flex flex-row gap-2 items-center justify-center"
+                className="flex flex-col text-[15px] w-[340px] mt-9 rounded-[20px]"
               >
-                <Image
-                  className="w-[20px]"
-                  alt="ajouter"
-                  src={add_frame}
-                ></Image>
-                <p>Ajouter</p>
-              </motion.button>
+                <input
+                  type="text"
+                  onChange={handleFiltre}
+                  placeholder="Filtrer les résultats"
+                  className="textbox rounded-[20px] py-3 px-6 font-medium"
+                />
+              </motion.label>
+            </div>
+            {!data ? (
+              <SyncLoader
+                className="mx-auto w-[100px] mt-36"
+                color="#8fb3ff"
+                speedMultiplier={0.7}
+              />
+            ) : (
+              <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}>
+                <Table
+                  data={data}
+                  setSelectedData={setSelectedData}
+                  setShowInfos={setShowInfos}
+                ></Table>
+              </motion.div>
             )}
           </div>
         </div>
-        <div className="flex justify-center mb-12">
-          <motion.label
-            animate={{
-              boxShadow: "0px 10px 15px rgba(0, 0, 0, 0.2)",
-            }}
-            className="flex flex-col text-[15px] w-[340px] mt-9 rounded-[20px]"
-          >
-            <input
-              type="text"
-              onChange={handleFiltre}
-              placeholder="Filtrer les résultats"
-              className="textbox rounded-[20px] py-3 px-6 font-medium"
-            />
-          </motion.label>
-        </div>
-        {!data ? (
-          <SyncLoader
-            className="mx-auto w-[100px] mt-36"
-            color="#8fb3ff"
-            speedMultiplier={0.7}
-          />
-        ) : (
-          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}>
-            <Table
-              data={data}
-              setSelectedData={setSelectedData}
-              setShowInfos={setShowInfos}
-            ></Table>
-          </motion.div>
-        )}
-      </div>
+      )}
+      {session && session.user.firstLog && <UpdatePass />}
     </div>
   );
 };

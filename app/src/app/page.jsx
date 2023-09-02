@@ -6,9 +6,9 @@ import HomePage from "./home/page";
 const WelcomePage = () => {
   const { data: session } = useSession();
   if (session && session.user) {
-    return <HomePage/>;
+    return <HomePage />;
   } else {
-    return <LoginPage/>;
+    return <LoginPage />;
   }
 };
 
