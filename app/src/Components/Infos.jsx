@@ -4,6 +4,9 @@ import { useEffect, useState, useRef } from "react";
 import { Checkbox } from "./Checkbox";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { algerie_telecom } from "../Assets";
 import { pcMarques, services, imprimanteMarques } from "../Constants";
 import {
   true_icon,
@@ -19,7 +22,7 @@ const Infos = ({
   selectedData,
   setSelectedData,
   setData,
-  data
+  data,
 }) => {
   const [employee, setEmployee] = useState(Object.assign({}, selectedData));
   const [saveEmployee, setSaveEmployee] = useState(
@@ -43,7 +46,7 @@ const Infos = ({
       setTimeout(() => {
         setConfirm(false);
       }, 4000);
-    });
+    }, []);
     return (
       <AnimatePresence>
         <motion.div
@@ -102,6 +105,8 @@ const Infos = ({
       .catch((error) => {
         console.error(error);
       });
+    data[rowid - 1] = employee;
+    console.log(data[rowid - 1]);
     setSelectedData(employee);
     setModify(false);
   };
@@ -257,7 +262,17 @@ const Infos = ({
     };
   });
   //////////////////////////////////////////////////////////////////////////////////////
-
+  const downloadPDF = (nom, prenom) => {
+    const capture = document.querySelector(".pdf-file");
+    html2canvas(capture).then((canvas) => {
+      const imgData = canvas.toDataURL("img/png");
+      const doc = new jsPDF("p", "mm", "a4");
+      const componentWidth = doc.internal.pageSize.getWidth();
+      const componentHeight = doc.internal.pageSize.getHeight() - 110;
+      doc.addImage(imgData, "PNG", 0, 0, componentWidth, componentHeight);
+      doc.save(`${nom}-${prenom}-parc-informatique.pdf`);
+    });
+  };
   return (
     <AnimatePresence>
       <motion.div
@@ -273,7 +288,12 @@ const Infos = ({
           className="action-bar absolute bg-white py-6 px-4 top-1/4 right-0 flex flex-col gap-6"
         >
           <motion.button whileTap={{ y: 4 }} whileHover={{ scale: 1.2 }}>
-            <Image className="w-[25px]" alt="télécharger" src={download_icon} />
+            <Image
+              className="w-[25px]"
+              alt="télécharger"
+              src={download_icon}
+              onClick={() => downloadPDF(selectedData.nom, selectedData.prenom)}
+            />
           </motion.button>
           <motion.button
             whileTap={{ y: 4 }}
@@ -292,8 +312,12 @@ const Infos = ({
         </div>
         <div
           ref={ref2}
-          className="bg-white relative px-12 py-6 rounded-xl scale-50 lg:scale-75 xl:scale-90 w-[1250px] h-[1100px] lg:ml-[12%] lg:mt-[-7%] xl:ml-[16%] xl:mt-[3%]"
+          className="pdf-file bg-white relative px-12 py-6 rounded-xl scale-50 lg:scale-75 xl:scale-90 w-[1250px] h-[1100px] lg:ml-[12%] lg:mt-[-7%] xl:ml-[16%] xl:mt-[3%]"
         >
+          <Image
+            src={algerie_telecom}
+            className="absolute top-3 right-5 w-[150px]"
+          />
           <motion.button
             whileTap={{ y: 5 }}
             whileHover={{ scale: 1.1 }}
@@ -328,7 +352,7 @@ const Infos = ({
                   <input
                     type="text"
                     defaultValue={employee.nom}
-                    onClick={(e) => (employee.nom = e.target.value)}
+                    onChange={(e) => (employee.nom = e.target.value)}
                     className="textbox rounded-[10px] py-1 px-2 font-medium"
                   />
                 </label>
@@ -342,7 +366,7 @@ const Infos = ({
                   <input
                     type="text"
                     defaultValue={employee.prenom}
-                    onClick={(e) => (employee.prenom = e.target.value)}
+                    onChange={(e) => (employee.prenom = e.target.value)}
                     className="textbox rounded-[10px] py-1 px-2 font-medium"
                   />
                 </label>
@@ -355,7 +379,7 @@ const Infos = ({
                 <label className="rounded-[40px] flex flex-col text-[15px] w-[127px]">
                   <select
                     defaultValue={employee.service}
-                    onClick={(e) => (employee.service = e.target.value)}
+                    onChange={(e) => (employee.service = e.target.value)}
                     className="textbox rounded-[10px] py-1 px-2 font-medium"
                   >
                     {services.map((service) => (

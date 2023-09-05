@@ -804,7 +804,7 @@ const ParcInfos = ({ setShowCurrent, setShowNext, employee }) => {
   );
 };
 
-const ResSec = ({ setShowCurrent, setShowNext, employee, session }) => {
+const ResSec = ({ setShowCurrent, setShowNext, employee, session, data }) => {
   const [secCheck, setSecCheck] = useState(false);
   //////////////////////////////////////////////////////////////////////////////////////
   const handleSubmit = async () => {
@@ -826,16 +826,13 @@ const ResSec = ({ setShowCurrent, setShowNext, employee, session }) => {
         }
       )
         .then((r) => r.json())
-        .then(() => {
-          // The response comes here
-          console.log(employee);
-        })
         .then(() => setShowCurrent(false))
         .then(() => setShowNext(true))
         .catch((error) => {
           // Errors are reported there
           console.log(error);
         });
+      data.push(employee);
     }
   };
 
@@ -900,7 +897,7 @@ const Succès = ({ setShowAdd }) => {
     setTimeout(() => {
       setShowAdd(false);
     }, 2500);
-  });
+  }, []);
   return (
     <div>
       <div className="flex flex-col gap-6 items-center justify-center p-12 mt-[12%]">
@@ -940,9 +937,10 @@ const Succès = ({ setShowAdd }) => {
   );
 };
 
-const AddEmpoyee = ({ showAdd, setShowAdd }) => {
+const AddEmpoyee = ({ dataLength, setShowAdd, data }) => {
   const { data: session } = useSession();
   const [employee, setEmployee] = useState({
+    id: dataLength + 1,
     nom: "",
     prenom: "",
     service: "",
@@ -1045,6 +1043,7 @@ const AddEmpoyee = ({ showAdd, setShowAdd }) => {
                 setShowNext={setStep4}
                 session={session}
                 employee={employee}
+                data={data}
               />
             )}
 

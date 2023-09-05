@@ -23,7 +23,7 @@ const HomePage = () => {
   const getData = async () => {
     try {
       const res = await fetch(
-        `https://sheet.best/api/sheets/6ea63e6c-960d-41c9-8abd-9902a235fa74?_format=index&_offset=1`,
+        `https://sheet.best/api/sheets/6ea63e6c-960d-41c9-8abd-9902a235fa74?_format=index`,
         { next: { revalidate: 10 } } //ISR : Incrimental static generation (mixed of SSR''server side rendering' and SSG 'static site generation') =>perfect for dynamic content
       );
       const data = await res.json();
@@ -33,6 +33,10 @@ const HomePage = () => {
       console.log(error);
     }
   };
+  function handleAdd() {
+    setShowAdd(true);
+    getData();
+  }
 
   function handleFiltre(event) {
     const newData = fullData.filter(
@@ -71,7 +75,7 @@ const HomePage = () => {
 
   useEffect(() => {
     getData();
-  }, [AddEmpoyee]);
+  }, []);
   return (
     <div className={`relative home min-h-screen ${styles.paddingX}`}>
       {!(session && session.user.firstLog) && (
@@ -85,7 +89,13 @@ const HomePage = () => {
               data={data}
             />
           )}
-          {showAdd && <AddEmpoyee setShowAdd={setShowAdd} />}
+          {showAdd && (
+            <AddEmpoyee
+              setShowAdd={setShowAdd}
+              data={data}
+              dataLength={data?.length}
+            />
+          )}
 
           <div className={`py-20 ${styles.paddingX}`}>
             <div className="flex flex-row">
@@ -98,7 +108,7 @@ const HomePage = () => {
                       boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)",
                     }}
                     whileTap={{ y: 0 }}
-                    onClick={() => setShowAdd(true)}
+                    onClick={handleAdd}
                     className="add-btn flex flex-row gap-2 items-center justify-center"
                   >
                     <Image

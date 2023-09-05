@@ -6,8 +6,6 @@ import Image from "next/image";
 
 const SigninButton = () => {
   const { data: session } = useSession();
-  console.log("is he loged in :", session?.user);
-
   if (session && session.user) {
     return (
       <div className="flex flex-row gap-20 ml-auto bg-transparent">

@@ -26,7 +26,7 @@ const LoginPage = () => {
       redirect: true,
       callbackUrl: "http://localhost:3000/home ",
     });
-    console.log(JSON.stringify(result));
+   // console.log(JSON.stringify(result));
   };
   return (
     <div className="login-page h-screen flex flex-col lg:flex-row xl:flex-row lg:gap-40 xl:gap-40 gap-20 items-center justify-center pt-28 pb-28">
