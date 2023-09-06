@@ -49,7 +49,7 @@ const UpdatePass = () => {
                 Vous devez changer votre mot de pass !
               </p>
               <p className="text-[17px] font-medium">
-                vous allez reconnecter aprés la confirmation
+                vous veillez reconnecter aprés la confirmation
               </p>
             </div>
 

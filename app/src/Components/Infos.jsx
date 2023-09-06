@@ -295,6 +295,7 @@ const Infos = ({
               onClick={() => downloadPDF(selectedData.nom, selectedData.prenom)}
             />
           </motion.button>
+
           <motion.button
             whileTap={{ y: 4 }}
             whileHover={{ scale: 1.2 }}
@@ -312,7 +313,7 @@ const Infos = ({
         </div>
         <div
           ref={ref2}
-          className="pdf-file bg-white relative px-12 py-6 rounded-xl scale-50 lg:scale-75 xl:scale-90 w-[1250px] h-[1100px] lg:ml-[12%] lg:mt-[-7%] xl:ml-[16%] xl:mt-[3%]"
+          className="pdf-file bg-white relative px-12 py-6 rounded-xl lg:scale-[70%] xl:scale-90 w-[1250px] h-[1070px] lg:ml-[10%] lg:mt-[-9%] xl:ml-[16%] xl:mt-[3%]"
         >
           <Image
             src={algerie_telecom}
