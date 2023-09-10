@@ -9,6 +9,7 @@ interface RequestBody {
   lastName: string;
   isAdmin: boolean;
   canAdd: boolean;
+  canModify: boolean;
   canDelete: boolean;
 }
 
@@ -24,6 +25,7 @@ export async function POST(request: Request) {
       isAdmin: body.isAdmin,
       canAdd: body.canAdd,
       canDelete: body.canDelete,
+      canModify: body.canModify,
     },
   });
   const { password, ...result } = user;

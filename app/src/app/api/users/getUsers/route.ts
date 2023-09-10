@@ -9,6 +9,7 @@ export async function GET() {
       isAdmin: true,
       canAdd: true,
       canDelete: true,
+      canModify: true,
     },
   });
   return new Response(JSON.stringify(users));

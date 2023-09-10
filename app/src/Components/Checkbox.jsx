@@ -3,7 +3,7 @@ import Image from "next/image";
 export const Checkbox = ({ boxchecked }) => {
   return (
     <div
-      className={`w-[20px] h-[20px] border-2 rounded-md border-black ${
+      className={`w-[20px] h-[20px] border-2 rounded-md border-black hover:cursor-pointer ${
         boxchecked ? "bg-black" : ""
       }`}
     >

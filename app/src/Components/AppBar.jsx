@@ -23,7 +23,7 @@ const AppBar = () => {
     };
   }, []);
   return (
-    <div className="top-0 z-10 backdrop-blur sticky">
+    <div className="top-0 z-20 backdrop-blur sticky">
       {session && session.user && (
         <div className="app-bar flex flex-row p-3" ref={ref}>
           <Image className="ml-0 w-[150px]" src={logo} alt="Algérie Télécom" />

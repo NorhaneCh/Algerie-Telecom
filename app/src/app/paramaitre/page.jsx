@@ -1,17 +1,14 @@
 "use client";
 import Image from "next/image";
 import { styles } from "../../styles";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import {
-  add_frame,
-  delete_icon_white,
-  settings,
-  settings_black,
-  user_icon,
-} from "../../Assets";
+import { Dropdown, Menu } from "antd";
+import { add_frame, settings, user_icon } from "../../Assets";
 import { motion } from "framer-motion";
+import UserInfos from "../../Components/UserInfos";
+import { Checkbox } from "../../Components/Checkbox";
 
 const page = () => {
   const [user, setUser] = useState({
@@ -22,6 +19,7 @@ const page = () => {
     isAdmin: false,
     canAdd: false,
     canDelete: false,
+    canModify: false,
   });
   let ref = useRef();
   const [users, setUsers] = useState([]);
@@ -36,7 +34,66 @@ const page = () => {
   const [services_bg_color, setServices_bg_color] = useState("");
   const [valideLastName, setValidLastName] = useState(true);
   const [valideFirstName, setValidFirstName] = useState(true);
+  const [showUserInfos, setShowUserInfos] = useState(false);
+  const [selectedUser, setSelectedUser] = useState();
   /////////////////////////////////////////////////
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [canAdd, setCanAdd] = useState(false);
+  const [canDelete, setCanDelete] = useState(false);
+  const [canModify, setCanModify] = useState(false);
+  ////////////////////////////////////////////////////////////////
+  function handleAdmin() {
+    if (user.isAdmin) {
+      setIsAdmin(false);
+      user.isAdmin = false;
+    } else {
+      setIsAdmin(true);
+      user.isAdmin = true;
+      setCanAdd(true);
+      user.canAdd = true;
+      setCanModify(true);
+      user.canModify = true;
+      setCanDelete(true);
+      user.canDelete = true;
+    }
+  }
+  ////////////////////////////////////////////////////////////////
+  function handleAdd() {
+    if (user.canAdd) {
+      setCanAdd(false);
+      user.canAdd = false;
+      setIsAdmin(false);
+      user.isAdmin = false;
+    } else {
+      setCanAdd(true);
+      user.canAdd = true;
+    }
+  }
+  ////////////////////////////////////////////////////////////////
+  function handleModify() {
+    if (user.canModify) {
+      setCanModify(false);
+      user.canModify = false;
+      setIsAdmin(false);
+      user.isAdmin = false;
+    } else {
+      setCanModify(true);
+      user.canModify = true;
+    }
+  }
+  ////////////////////////////////////////////////////////////////
+  function handleDelete() {
+    if (user.canDelete) {
+      setCanDelete(false);
+      user.canDelete = false;
+      setIsAdmin(false);
+      user.isAdmin = false;
+    } else {
+      setCanDelete(true);
+      user.canDelete = true;
+    }
+  }
+  ////////////////////////////////////////////////////////////////
   const addUser = async (user) => {
     const data = await fetch("http://localhost:3000/api/users/createUser", {
       body: JSON.stringify(user),
@@ -49,6 +106,11 @@ const page = () => {
       .catch((error) => {
         console.error("Error:", error);
       });
+  };
+  ///////////////////////////////////////////////////
+  const handleInfos = (thisUser) => {
+    setShowUserInfos(true);
+    setSelectedUser(thisUser);
   };
   ///////////////////////////////////////////////////
   const handleSubmit = async (user) => {
@@ -66,18 +128,10 @@ const page = () => {
       }
     } else {
       user.username = user.lastName + "." + user.firstName;
-      if (userRole == "admin") {
-        user.isAdmin = true;
-        user.canAdd = true;
-        user.canDelete = true;
-      }
-      if (userRole == "editeur") {
-        user.canAdd = true;
-        user.canDelete = true;
-      }
       addUser(user);
       //users.push(user);
       setToggle(false);
+      reinisializeBox();
       setValidFirstName(true);
       setValidLastName(true);
     }
@@ -97,7 +151,7 @@ const page = () => {
       });
   };
   /////////////////////////////////////////////////////////
-  const handleDelete = async (username) => {
+  const handleDeleteUser = async (username) => {
     deleteUser(username);
     setShowDeleteModel(true);
     setTimeout(() => {
@@ -134,40 +188,6 @@ const page = () => {
       setShowModel(false);
     }, 2700);
   };
-  ///////////////////////////////////////////////////////////
-  const updateRole = async (username, canAdd, canDelete, isAdmin) => {
-    const updatedUser = await fetch(
-      "http://localhost:3000/api/users/updateRole",
-      {
-        body: JSON.stringify({ username, canAdd, canDelete, isAdmin }),
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((response) => response.json())
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-  ///////////////////////////////////////////////////////////
-  const handleUserRole = async (username, e) => {
-    const value = e.target.value;
-    let isAdmin = false;
-    let canAdd = false;
-    let canDelete = false;
-    if (value == "admin") {
-      isAdmin = true;
-      canAdd = true;
-      canDelete = true;
-    }
-    if (value == "editeur") {
-      canAdd = true;
-      canDelete = true;
-    }
-    updateRole(username, canAdd, canDelete, isAdmin);
-  };
   //////////////////////////////////////////////////////////
   const fetchUsers = async () => {
     const data = await fetch("http://localhost:3000/api/users/getUsers", {
@@ -192,6 +212,14 @@ const page = () => {
     setUsers_bg_color("bg-primary");
   };
   /////////////////////////////////////////////////////////////////////////////
+  const handleShowToggle = () => {
+    setToggle(true);
+    console.log("admin :", isAdmin);
+    console.log("add :", canAdd);
+    console.log("delete :", canDelete);
+    console.log("modify :", canModify);
+  };
+  /////////////////////////////////////////////////////////////////////////////
   const handleServices = () => {
     setUsers_bg_color("");
     setShowUsers(false);
@@ -199,16 +227,29 @@ const page = () => {
     setServices_bg_color("bg-primary");
   };
   /////////////////////////////////////////////////////////////////////////////
+  const reinisializeBox = () => {
+    setIsAdmin(false);
+    user.isAdmin = false;
+    setCanAdd(false);
+    user.canAdd = false;
+    setCanModify(false);
+    user.canModify = false;
+    setCanDelete(false);
+    user.canDelete = false;
+  };
+  /////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     fetchUsers();
 
     let handler = (e) => {
       if (!ref.current?.contains(e.target)) {
+        reinisializeBox();
         setValidFirstName(true);
         setValidLastName(true);
         setToggle(false);
       }
     };
+
     document.addEventListener("mousedown", handler);
     return () => {
       document.removeEventListener("mousedown", handler);
@@ -218,7 +259,12 @@ const page = () => {
     <div>
       {session && session.user.isAdmin && (
         <div className="relative">
-          <p></p>
+          {showUserInfos ? (
+            <UserInfos
+              selectedUser={selectedUser}
+              setShowUserInfos={setShowUserInfos}
+            />
+          ) : null}
           {showModel && (
             <Popup
               content={"mot de pass réinitialisé à '0000'"}
@@ -229,8 +275,8 @@ const page = () => {
             <Popup content={"Utilisateur supprimé"} forDelete={true} />
           )}
           <div className="flex flex-row items-start">
-            <div className="w-[20%] float-left bg-light-blue h-screen sticky top-0">
-              <div className="flex flex-row gap-2 items-center mt-20 ml-16">
+            <div className="w-[20%] bg-light-blue h-[100%] fixed">
+              <div className="flex flex-row gap-2 items-center mt-10 ml-16">
                 <Image
                   src={settings}
                   className="w-[25px] h-[25px]"
@@ -260,7 +306,7 @@ const page = () => {
               </div>
             </div>
             <div
-              className={`${styles.paddingX} ${styles.paddingY} w-[79%] float-right`}
+              className={`${styles.paddingX} ${styles.paddingY} w-[79%] ml-[20%]`}
             >
               <motion.div
                 initial={{ opacity: 0 }}
@@ -275,7 +321,7 @@ const page = () => {
                         <Image
                           className="w-[25px] h-[25px]"
                           src={add_frame}
-                          onClick={() => setToggle(true)}
+                          onClick={() => handleShowToggle()}
                           alt="ajouter"
                         ></Image>
                       </button>
@@ -320,17 +366,40 @@ const page = () => {
                             />
                           </label>
                           <label>
-                            <div className="flex flex-row gap-6 items-center">
-                              <p>Sélectionner le role :</p>
-                              <select
-                                onChange={(e) => setUserRole(e.target.value)}
-                                className="px-6 py-1 h-9 rounded-md border-2 border-light-gray w-[155px]"
-                              >
-                                <option value="lecteur"> </option>
-                                <option value="admin">Admin</option>
-                                <option value="lecteur">Lecteur</option>
-                                <option value="editeur">Editeur</option>
-                              </select>
+                            <div className="flex flex-row gap-2 mt-3">
+                              <button onClick={handleAdmin}>
+                                <Checkbox boxchecked={isAdmin} />
+                              </button>
+
+                              <p>Administrateur</p>
+                            </div>
+                            <div className="flex flex-col gap-3 items-center mt-6">
+                              <p className="fonts-medium">
+                                Cocher les privilèges de cet utilisateur :
+                              </p>
+                              <div className="flex flex-col gap-4 mt-4">
+                                <div className="flex flex-row gap-2">
+                                  <button onClick={handleAdd}>
+                                    <Checkbox boxchecked={canAdd} />
+                                  </button>
+
+                                  <p>Ajouter des employés</p>
+                                </div>
+                                <div className="flex flex-row gap-2">
+                                  <button onClick={handleModify}>
+                                    <Checkbox boxchecked={canModify} />
+                                  </button>
+
+                                  <p>Modifier des employés</p>
+                                </div>
+                                <div className="flex flex-row gap-2">
+                                  <button onClick={handleDelete}>
+                                    <Checkbox boxchecked={canDelete} />
+                                  </button>
+
+                                  <p>Supprimer des employés</p>
+                                </div>
+                              </div>
                             </div>
                           </label>
                           <button
@@ -344,63 +413,56 @@ const page = () => {
                     </div>
                     <div className="ml-auto flex flex-col lg:h-[600px] xl:h-[1000px] overflow-auto px-9 py-4 text-[15px]">
                       {users.map((user, i) => (
-                        <div
-                          key={`user-${i}`}
-                          className="flex flex-row gap-9 border-b-2 border-light-gray h-[55px] items-center"
-                        >
-                          <Image
-                            src={user_icon}
-                            alt="user"
-                            className="w-[40px]"
-                          ></Image>
-                          <div className="flex flex-col -ml-6">
-                            <div className="flex flex-row gap-1 items-center w-[150px] ">
-                              <p>{user.lastName}</p>
-                              <p>{user.firstName}</p>
+                        <Dropdown
+                          overlay={
+                            <div className="z-0 flex flex-col bg-gray-200 border boder-gray-500 rounded-md">
+                              <div
+                                className="hover:bg-gray-300 h-9 py-2 px-3 hover:cursor-pointer"
+                                onClick={() => handleInfos(user)}
+                              >
+                                Modifier les privilèges
+                              </div>
+                              <div
+                                className="hover:bg-gray-300 h-9 py-2 px-3 hover:cursor-pointer text-red-600"
+                                onClick={() => handleDeleteUser(user.username)}
+                              >
+                                Supprimer
+                              </div>
                             </div>
-                            <p className="text-[11px] text-gray-500">
-                              {user.username}
-                            </p>
-                          </div>
-                          <label>
-                            <select
-                              className="px-6 py-1 h-9 rounded-md border-2 border-light-gray"
-                              onChange={(e) => handleUserRole(user.username, e)}
-                              defaultValue={
-                                user.isAdmin
-                                  ? "Admin"
-                                  : user.canAdd && user.canDelete
-                                  ? "editeur"
-                                  : "lecteur"
-                              }
-                            >
-                              <option value="admin">Admin</option>
-                              <option value="lecteur">Lecteur</option>
-                              <option value="editeur">Editeur</option>
-                            </select>
-                          </label>
-                          <button
-                            className="py-1 px-3 rounded-md h-9 bg-gray-600 text-white hover:bg-black"
-                            onClick={() => handleUpdatePass(user.username)}
-                          >
-                            Réinitialiser
-                          </button>
-                          <button
-                            className="py-1 px-2 rounded-md h-9 bg-red-500 text-white hover:bg-red-600"
-                            onClick={() => handleDelete(user.username)}
+                          }
+                          trigger={["contextMenu"]}
+                        >
+                          <div
+                            key={`user-${i}`}
+                            className="relative flex flex-row gap-9 border-b-2 border-light-gray h-[55px] items-center px-2 hover:bg-gray-100"
                           >
                             <Image
-                              className="w-[20px]"
-                              src={delete_icon_white}
-                              alt="supprimer"
+                              src={user_icon}
+                              alt="user"
+                              className="w-[40px]"
                             ></Image>
-                          </button>
-                        </div>
+                            <div className="flex flex-col -ml-6">
+                              <div className="flex flex-row gap-1 items-center w-[150px] ">
+                                <p>{user.lastName}</p>
+                                <p>{user.firstName}</p>
+                              </div>
+                              <p className="text-[11px] text-gray-500">
+                                {user.isAdmin ? "Admin" : ""}
+                              </p>
+                            </div>
+                            <button
+                              className="py-1 px-3 rounded-md h-9 bg-gray-600 text-white hover:bg-black"
+                              onClick={() => handleUpdatePass(user.username)}
+                            >
+                              Réinitialiser
+                            </button>
+                          </div>
+                        </Dropdown>
                       ))}
                     </div>
                   </>
                 )}
-                {showServices && <>Services</>}
+                {showServices ? <>Services</> : null}
               </motion.div>
             </div>
           </div>
@@ -442,7 +504,7 @@ const Popup = ({ content, forDelete }) => {
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -50 }}
-      className={`py-4 px-6  absolute lg:top-[2%] xl:top-[2%] xl:right-[45%] lg:right-[45%] rounded-xl w-[300px] ${
+      className={`py-4 px-6  absolute lg:top-[2%] xl:top-[2%] xl:right-[45%] lg:right-[40%] rounded-xl w-[300px] ${
         forDelete ? "bg-red-500" : "bg-gray-600"
       }`}
     >

@@ -5,6 +5,7 @@ interface RequestBody {
   isAdmin: boolean;
   canAdd: boolean;
   canDelete: boolean;
+  canModify: boolean;
 }
 
 export async function PATCH(request: Request) {
@@ -18,6 +19,7 @@ export async function PATCH(request: Request) {
       isAdmin: body.isAdmin,
       canAdd: body.canAdd,
       canDelete: body.canDelete,
+      canModify: body.canModify,
     },
   });
   const { password, ...result } = updatedUser;

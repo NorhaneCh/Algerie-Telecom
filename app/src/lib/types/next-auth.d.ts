@@ -10,6 +10,7 @@ declare module "next-auth" {
       isAdmin: boolean;
       canAdd: boolean;
       canDelete: boolean;
+      canModify:boolean;
       firstLog: boolean;
       accessToken: string;
     };
