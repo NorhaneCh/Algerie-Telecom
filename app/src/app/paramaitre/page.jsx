@@ -1,14 +1,24 @@
 "use client";
 import Image from "next/image";
 import { styles } from "../../styles";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { Dropdown, Menu } from "antd";
-import { add_frame, settings, user_icon } from "../../Assets";
+import { Dropdown } from "antd";
+import {
+  settings,
+  user_icon,
+  grid_icon,
+  users_icon,
+  logout_black,
+  edit_icon,
+  delete_icon,
+  about_icon,
+} from "../../Assets";
 import { motion } from "framer-motion";
 import UserInfos from "../../Components/UserInfos";
 import { Checkbox } from "../../Components/Checkbox";
+import Server from "next/dist/server/base-server";
 
 const page = () => {
   const [user, setUser] = useState({
@@ -21,17 +31,31 @@ const page = () => {
     canDelete: false,
     canModify: false,
   });
+  const [service, setService] = useState({
+    name: "",
+  });
   let ref = useRef();
+  const [services, setServices] = useState([
+    {
+      name: "",
+    },
+  ]);
+  const [addedService, setAddedService] = useState("");
+  const [pcMarques, setPcMarques] = useState([]);
+  const [addedPcMarque, setAddedPcMarque] = useState("");
+  const [imprMarques, setImprMarques] = useState([]);
+  const [addedImprMarque, setAddedImprMarque] = useState("");
   const [users, setUsers] = useState([]);
   const [showUsers, setShowUsers] = useState(false);
-  const [showServices, setShowServices] = useState(false);
+  const [showListes, setShowListes] = useState(false);
+  const [showAbout, setShowAbout] = useState(true);
   const [showModel, setShowModel] = useState(false);
   const [showDeleteModel, setShowDeleteModel] = useState(false);
-  const [userRole, setUserRole] = useState("");
   const [toggle, setToggle] = useState(false);
   const { data: session } = useSession();
   const [users_bg_color, setUsers_bg_color] = useState("");
-  const [services_bg_color, setServices_bg_color] = useState("");
+  const [listes_bg_color, setListes_bg_color] = useState("");
+  const [about_bg_color, setAbout_bg_color] = useState("bg-primary");
   const [valideLastName, setValidLastName] = useState(true);
   const [valideFirstName, setValidFirstName] = useState(true);
   const [showUserInfos, setShowUserInfos] = useState(false);
@@ -129,12 +153,31 @@ const page = () => {
     } else {
       user.username = user.lastName + "." + user.firstName;
       addUser(user);
+
       //users.push(user);
       setToggle(false);
       reinisializeBox();
       setValidFirstName(true);
       setValidLastName(true);
     }
+  };
+  /////////////////////////////////////////////////
+  const deleteService = async (name) => {
+    const deletedService = await fetch(
+      "http://localhost:3000/api/services/deleteService",
+      {
+        body: JSON.stringify({ name }),
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    fetchServices();
   };
   /////////////////////////////////////////////////
   const deleteUser = async (username) => {
@@ -157,6 +200,7 @@ const page = () => {
     setTimeout(() => {
       setShowDeleteModel(false);
     }, 2700);
+
     //const deletedUser = username;
     //const updatedUsers = users.filter((user) => user.username !== deletedUser);
     //setUsers(updatedUsers);
@@ -205,10 +249,157 @@ const page = () => {
       });
   };
   /////////////////////////////////////////////////////////////////////////////
+  const addService = async (service) => {
+    const data = await fetch("http://localhost:3000/api/services/addService", {
+      body: JSON.stringify(service),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    fetchServices();
+    console.log(services);
+    service.name = "";
+  };
+  //////////////////////////////////////////////////////////
+  const fetchServices = async () => {
+    const services = await fetch(
+      "http://localhost:3000/api/services/getServices",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    const filteredData = services?.slice(1);
+    setServices(filteredData);
+  };
+  /////////////////////////////////////////////////////////////////////////////
+  const addPcMarque = async (name) => {
+    const data = await fetch(
+      "http://localhost:3000/api/pcMarques/addPcMarque",
+      {
+        body: JSON.stringify({ name }),
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    fetchPcMarques();
+    setAddedPcMarque("");
+  };
+  //////////////////////////////////////////////////////////
+  const fetchPcMarques = async () => {
+    const pcMarques = await fetch(
+      "http://localhost:3000/api/pcMarques/getPcMarques",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    const filteredData = pcMarques?.slice(1);
+    setPcMarques(filteredData);
+  };
+  /////////////////////////////////////////////////
+  const deletePcMarque = async (name) => {
+    const deletedPcMarque = await fetch(
+      "http://localhost:3000/api/pcMarques/deletePcMarque",
+      {
+        body: JSON.stringify({ name }),
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    fetchPcMarques();
+  };
+  /////////////////////////////////////////////////////////////////////////////
+  const addImprMarque = async (name) => {
+    const data = await fetch(
+      "http://localhost:3000/api/imprMarques/addImprMarque",
+      {
+        body: JSON.stringify({ name }),
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    setAddedImprMarque("");
+    fetchImprMarques();
+  };
+  //////////////////////////////////////////////////////////
+  const fetchImprMarques = async () => {
+    const ImprMarques = await fetch(
+      "http://localhost:3000/api/imprMarques/getImprMarques",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    const filteredData = ImprMarques?.slice(1);
+    setImprMarques(filteredData);
+  };
+  /////////////////////////////////////////////////
+  const deleteImprMarque = async (name) => {
+    const deletedImprMarque = await fetch(
+      "http://localhost:3000/api/imprMarques/deleteImprMarque",
+      {
+        body: JSON.stringify({ name }),
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    fetchImprMarques();
+  };
+  /////////////////////////////////////////////////////////////////////////////
   const handleUsers = () => {
-    setServices_bg_color("");
-    setShowServices(false);
+    setListes_bg_color("");
+    setShowListes(false);
+    setShowAbout(false);
     setShowUsers(true);
+    setAbout_bg_color("");
     setUsers_bg_color("bg-primary");
   };
   /////////////////////////////////////////////////////////////////////////////
@@ -220,11 +411,25 @@ const page = () => {
     console.log("modify :", canModify);
   };
   /////////////////////////////////////////////////////////////////////////////
-  const handleServices = () => {
+  const handleListes = () => {
+    fetchServices();
+    fetchPcMarques();
+    fetchImprMarques();
     setUsers_bg_color("");
     setShowUsers(false);
-    setShowServices(true);
-    setServices_bg_color("bg-primary");
+    setShowAbout(false);
+    setShowListes(true);
+    setAbout_bg_color("");
+    setListes_bg_color("bg-primary");
+  };
+  /////////////////////////////////////////////////////////////////////////////
+  const handleAbout = () => {
+    setUsers_bg_color("");
+    setShowUsers(false);
+    setShowListes(false);
+    setListes_bg_color("");
+    setAbout_bg_color("bg-primary");
+    setShowAbout(true);
   };
   /////////////////////////////////////////////////////////////////////////////
   const reinisializeBox = () => {
@@ -237,10 +442,10 @@ const page = () => {
     setCanDelete(false);
     user.canDelete = false;
   };
+
   /////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     fetchUsers();
-
     let handler = (e) => {
       if (!ref.current?.contains(e.target)) {
         reinisializeBox();
@@ -254,7 +459,7 @@ const page = () => {
     return () => {
       document.removeEventListener("mousedown", handler);
     };
-  }, [handleSubmit, handleDelete]);
+  }, [handleSubmit, handleDeleteUser]);
   return (
     <div>
       {session && session.user.isAdmin && (
@@ -286,21 +491,48 @@ const page = () => {
               </div>
               <div className="mt-12">
                 <div
-                  className={`h-12 border-y border-white ${users_bg_color} py-3 pl-24 hover:cursor-pointer hover:bg-primary`}
+                  className={`h-12 border-y border-white ${about_bg_color} py-3 pl-20 hover:cursor-pointer hover:bg-primary flex flex-row gap-3`}
+                  onClick={() => handleAbout()}
+                >
+                  <Image
+                    className="w-[20px] h-[20px]"
+                    src={about_icon}
+                    alt="frame"
+                  ></Image>
+                  <p className="text-[15px] font-medium">A propos</p>
+                </div>
+                <div
+                  className={`h-12 border-b border-white ${users_bg_color} py-3 pl-20 hover:cursor-pointer hover:bg-primary flex flex-row gap-3`}
                   onClick={() => handleUsers()}
                 >
+                  <Image
+                    className="w-[20px] h-[20px]"
+                    src={users_icon}
+                    alt="frame"
+                  ></Image>
                   <p className="text-[15px] font-medium">Utilisateurs</p>
                 </div>
                 <div
-                  className={`h-12 border-b border-white ${services_bg_color} py-3 pl-24 hover:cursor-pointer hover:bg-primary`}
-                  onClick={() => handleServices()}
+                  className={`h-12 border-b border-white ${listes_bg_color} py-3 pl-20 hover:cursor-pointer hover:bg-primary flex flex-row gap-3`}
+                  onClick={() => handleListes()}
                 >
-                  <p className="text-[15px] font-medium">Services</p>
+                  <Image
+                    className="w-[20px] h-[20px]"
+                    src={grid_icon}
+                    alt="frame"
+                  ></Image>
+                  <p className="text-[15px] font-medium">Listes</p>
                 </div>
+
                 <div
-                  className="h-12 border-b border-white py-3 pl-24 hover:cursor-pointer hover:bg-primary"
+                  className="h-12 border-b border-white py-3 pl-20 hover:cursor-pointer hover:bg-primary flex flex-row gap-3"
                   onClick={signOut}
                 >
+                  <Image
+                    className="w-[20px] h-[20px]"
+                    src={logout_black}
+                    alt="frame"
+                  ></Image>
                   <p className="text-[15px] font-medium">Se déconnecter</p>
                 </div>
               </div>
@@ -317,13 +549,11 @@ const page = () => {
                 {showUsers && (
                   <>
                     <div>
-                      <button className="-mt-1 p-1  rounded-[20px] h-9 bg-primary text-white hover:scale-110">
-                        <Image
-                          className="w-[25px] h-[25px]"
-                          src={add_frame}
-                          onClick={() => handleShowToggle()}
-                          alt="ajouter"
-                        ></Image>
+                      <button
+                        className="-mt-1py-0 px-2 text-white bg-gray-500 rounded-full hover:bg-gray-600 text-[20px] font-semibold"
+                        onClick={() => handleShowToggle()}
+                      >
+                        +
                       </button>
                       {toggle && (
                         <motion.div
@@ -331,7 +561,7 @@ const page = () => {
                           initial={{ opacity: 0, y: -50 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -50 }}
-                          className={`pt-9 pb-3 mt-6 rounded-lg border-2 border-light-gray w-[400px] flex flex-col items-center justify-center gap-4 text-[14px]`}
+                          className={`pt-9 pb-3 -mt-6 ml-9 rounded-lg border-2 border-light-gray bg-white w-[400px] flex flex-col items-center justify-center gap-4 text-[14px]`}
                         >
                           <label className="flex flex-col w-[80%] mx-auto">
                             <input
@@ -411,22 +641,32 @@ const page = () => {
                         </motion.div>
                       )}
                     </div>
-                    <div className="ml-auto flex flex-col lg:h-[600px] xl:h-[1000px] overflow-auto px-9 py-4 text-[15px]">
+                    <div className="ml-auto flex flex-col lg:h-[600px] xl:h-[1000px] overflow-auto px-9 pb-4 text-[15px]">
                       {users.map((user, i) => (
                         <Dropdown
                           overlay={
                             <div className="z-0 flex flex-col bg-gray-200 border boder-gray-500 rounded-md">
                               <div
-                                className="hover:bg-gray-300 h-9 py-2 px-3 hover:cursor-pointer"
+                                className="hover:bg-gray-300 h-9 py-2 px-3 hover:cursor-pointer flex flex-row gap-2 items-center"
                                 onClick={() => handleInfos(user)}
                               >
-                                Modifier les privilèges
+                                <Image
+                                  className="w-[15px] h-[15px]"
+                                  src={edit_icon}
+                                  alt="frame"
+                                />
+                                <p>Modifier les privilèges</p>
                               </div>
                               <div
-                                className="hover:bg-gray-300 h-9 py-2 px-3 hover:cursor-pointer text-red-600"
+                                className="hover:bg-gray-300 h-9 py-2 px-3 hover:cursor-pointer text-red-600 flex flex-row gap-2 items-center"
                                 onClick={() => handleDeleteUser(user.username)}
                               >
-                                Supprimer
+                                <Image
+                                  className="w-[15px] h-[15px]"
+                                  src={delete_icon}
+                                  alt="frame"
+                                />
+                                <p>Supprimer</p>
                               </div>
                             </div>
                           }
@@ -462,7 +702,124 @@ const page = () => {
                     </div>
                   </>
                 )}
-                {showServices ? <>Services</> : null}
+                {showListes ? (
+                  <div className="flex flex-row justify-between w-[100%]">
+                    <div className="border-x border-light-gray w-1/3">
+                      <p className="font-semibold text-center">Services : </p>
+                      <div className="flex flex-row gap-2 items-center justify-center mt-9 px-2">
+                        <label className="flex flex-col w-[100%] mx-auto">
+                          <input
+                            type="text"
+                            placeholder="Service"
+                            value={service.name}
+                            onChange={(e) => (service.name = e.target.value)}
+                            className="border-2 rounded-md py-1 pl-2 font-medium border-light-gray"
+                          />
+                        </label>
+                        <button
+                          className="py-0 px-2 text-white bg-gray-500 rounded-full hover:bg-gray-600 text-[20px] font-semibold"
+                          onClick={() => addService(service)}
+                        >
+                          +
+                        </button>
+                      </div>
+                      <div className="flex flex-col gap-3 px-9 mt-6">
+                        {services?.map((service, i) => (
+                          <div key={i} className="flex flex-row items-center">
+                            <div className="w-[90%]">
+                              <p>{service.name}</p>
+                            </div>
+                            <button
+                              className="ml-auto px-2 text-red-600 rounded-full bg-gray-300 hover:bg-gray-400 text-[22px] font-bold"
+                              onClick={() => deleteService(service.name)}
+                            >
+                              -
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="border-r border-light-gray w-1/3">
+                      <p className="font-semibold text-center">
+                        Imprimante marques :{" "}
+                      </p>
+
+                      <div className="flex flex-row gap-2 items-center justify-center mt-9 px-2">
+                        <label className="flex flex-col w-[100%] mx-auto">
+                          <input
+                            type="text"
+                            placeholder="Imprimante marque"
+                            value={addedImprMarque}
+                            onChange={(e) => setAddedImprMarque(e.target.value)}
+                            className="border-2 rounded-md py-1 pl-2 font-medium border-light-gray"
+                          />
+                        </label>
+                        <button
+                          className="py-0 px-2 text-white bg-gray-500 rounded-full hover:bg-gray-600 text-[20px] font-semibold"
+                          onClick={() => addImprMarque(addedImprMarque)}
+                        >
+                          +
+                        </button>
+                      </div>
+                      <div className="flex flex-col gap-3 px-9 mt-6">
+                        {imprMarques?.map((ImprMarque, i) => (
+                          <div key={i} className="flex flex-row items-center">
+                            <div className="w-[90%]">
+                              <p>{ImprMarque.name}</p>
+                            </div>
+                            <button
+                              className="ml-auto px-2 text-red-600 rounded-full bg-gray-300 hover:bg-gray-400 text-[22px] font-bold"
+                              onClick={() => deleteImprMarque(ImprMarque.name)}
+                            >
+                              -
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="border-r border-light-gray w-1/3">
+                      <p className="font-semibold text-center">Pc marques :</p>
+                      <div className="flex flex-row gap-2 items-center justify-center mt-9 px-2">
+                        <label className="flex flex-col w-[100%] mx-auto">
+                          <input
+                            type="text"
+                            placeholder="pc marque"
+                            value={addedPcMarque}
+                            onChange={(e) => setAddedPcMarque(e.target.value)}
+                            className="border-2 rounded-md py-1 pl-2 font-medium border-light-gray"
+                          />
+                        </label>
+                        <button
+                          className="py-0 px-2 text-white bg-gray-500 rounded-full hover:bg-gray-600 text-[20px] font-semibold"
+                          onClick={() => addPcMarque(addedPcMarque)}
+                        >
+                          +
+                        </button>
+                      </div>
+                      <div className="flex flex-col gap-3 px-9 mt-6">
+                        {pcMarques?.map((pcMarque, i) => (
+                          <div key={i} className="flex flex-row items-center">
+                            <div className="w-[90%]">
+                              <p>{pcMarque.name}</p>
+                            </div>
+                            <button
+                              className="ml-auto px-2 text-red-600 rounded-full bg-gray-300 hover:bg-gray-400 text-[22px] font-bold"
+                              onClick={() => deletePcMarque(pcMarque.name)}
+                            >
+                              -
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+                {showAbout ? (
+                  <div>
+                    <p className="font-semibold">Gérer le parc Informatique</p>
+                  </div>
+                ) : null}
               </motion.div>
             </div>
           </div>
@@ -476,7 +833,7 @@ const page = () => {
           </p>
           <Link href="http://localhost:3000/home">
             <p className="text-primary hover:text-black font-medium">
-              revenir à la page d'acceil
+              revenir à la page d'accueil
             </p>
           </Link>
         </div>

@@ -101,7 +101,7 @@ const HomePage = () => {
             <div className="flex flex-row">
               <p className="text-[25px] font-semibold">Liste des employés</p>
               <div className="ml-auto">
-                {session && session.user.canAdd && (
+                {session && session.user.canAdd ? (
                   <motion.button
                     whileHover={{
                       y: -5,
@@ -118,7 +118,7 @@ const HomePage = () => {
                     ></Image>
                     <p>Ajouter</p>
                   </motion.button>
-                )}
+                ) : null}
               </div>
             </div>
             <div className="flex justify-center mb-12">

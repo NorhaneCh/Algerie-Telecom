@@ -1,14 +1,38 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import { imprimanteMarques, pcMarques, services } from "../Constants";
 import { useSession } from "next-auth/react";
+import { name } from "file-loader";
 
 const PersonalInfos = ({ setShowCurrent, setShowNext, employee }) => {
+  const [services, setServices] = useState([]);
+  //////////////////////////////////////////////////////////
+  const fetchServices = async () => {
+    const services = await fetch(
+      "http://localhost:3000/api/services/getServices",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((value) => {
+        setServices(value);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+  ///////////////////////////////////////////////////////////////////////////////
   function handleShow() {
     setShowCurrent(false);
     setShowNext(true);
   }
+  useEffect(() => {
+    fetchServices();
+  }, []);
   return (
     <motion.div
       initial={{ x: 600, opacity: 0 }}
@@ -58,8 +82,8 @@ const PersonalInfos = ({ setShowCurrent, setShowNext, employee }) => {
           name="service"
         >
           {services.map((service, i) => (
-            <option key={i} className="text-[12px]" value={service}>
-              {service}
+            <option key={i} className="text-[12px]" value={service.name}>
+              {service.name}
             </option>
           ))}
         </select>
@@ -75,7 +99,46 @@ const ParcInfos = ({ setShowCurrent, setShowNext, employee }) => {
   const [imprSimple, setImprSimple] = useState(false);
   const [imprTh, setImprTh] = useState(false);
   const [scanner, setScanner] = useState(false);
-
+  const [pcMarques, setPcMarques] = useState([]);
+  const [imprimanteMarques, setImprimanteMarques] = useState([]);
+  const fetchPcMarques = async () => {
+    const pcMarques = await fetch(
+      "http://localhost:3000/api/pcMarques/getPcMarques",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((value) => {
+        setPcMarques(value);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+  /////////////////////////////////////////////////
+  const fetchImprMarques = async () => {
+    const ImprMarques = await fetch(
+      "http://localhost:3000/api/imprMarques/getImprMarques",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((value) => {
+        setImprimanteMarques(value);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+  /////////////////////////////////////////////////
   function handleSuiv() {
     if (pcBureau) employee.pc_bureau = "oui";
     else {
@@ -137,6 +200,10 @@ const ParcInfos = ({ setShowCurrent, setShowNext, employee }) => {
     setShowCurrent(false);
     setShowNext(true);
   }
+  useEffect(() => {
+    fetchImprMarques();
+    fetchPcMarques();
+  }, []);
   return (
     <motion.div
       initial={{ x: 600, opacity: 0 }}
@@ -183,9 +250,9 @@ const ParcInfos = ({ setShowCurrent, setShowNext, employee }) => {
                     <option
                       key={index}
                       className="text-[12px]"
-                      value={pcMarque}
+                      value={pcMarque.name}
                     >
-                      {pcMarque}
+                      {pcMarque.name}
                     </option>
                   ))}
                 </select>
@@ -298,9 +365,9 @@ const ParcInfos = ({ setShowCurrent, setShowNext, employee }) => {
                     <option
                       key={index}
                       className="text-[12px]"
-                      value={pcMarque}
+                      value={pcMarque.name}
                     >
-                      {pcMarque}
+                      {pcMarque.name}
                     </option>
                   ))}
                 </select>
@@ -415,9 +482,9 @@ const ParcInfos = ({ setShowCurrent, setShowNext, employee }) => {
                     <option
                       key={index}
                       className="text-[12px]"
-                      value={imprimanteMarque}
+                      value={imprimanteMarque.name}
                     >
-                      {imprimanteMarque}
+                      {imprimanteMarque.name}
                     </option>
                   ))}
                 </select>
@@ -549,9 +616,9 @@ const ParcInfos = ({ setShowCurrent, setShowNext, employee }) => {
                     <option
                       key={index}
                       className="text-[12px]"
-                      value={imprimanteMarque}
+                      value={imprimanteMarque.name}
                     >
-                      {imprimanteMarque}
+                      {imprimanteMarque.name}
                     </option>
                   ))}
                 </select>
@@ -683,9 +750,9 @@ const ParcInfos = ({ setShowCurrent, setShowNext, employee }) => {
                     <option
                       key={index}
                       className="text-[12px]"
-                      value={imprimanteMarque}
+                      value={imprimanteMarque.name}
                     >
-                      {imprimanteMarque}
+                      {imprimanteMarque.name}
                     </option>
                   ))}
                 </select>
@@ -992,11 +1059,13 @@ const AddEmpoyee = ({ dataLength, setShowAdd, data }) => {
     date_modif: "",
     modifié_par: "",
   });
+
   const [step1, setStep1] = useState(true);
   const [step2, setStep2] = useState(false);
   const [step3, setStep3] = useState(false);
   const [step4, setStep4] = useState(false);
   let ref = useRef();
+
   useEffect(() => {
     let handler = (e) => {
       if (!ref.current?.contains(e.target)) {

@@ -7,7 +7,6 @@ import Image from "next/image";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { algerie_telecom } from "../Assets";
-import { pcMarques, services, imprimanteMarques } from "../Constants";
 import {
   true_icon,
   false_icon,
@@ -24,6 +23,9 @@ const Infos = ({
   setData,
   data,
 }) => {
+  const [services, setServices] = useState([]);
+  const [pcMarques, setPcMarques] = useState([]);
+  const [imprimanteMarques, setImprimanteMarques] = useState([]);
   const [employee, setEmployee] = useState(Object.assign({}, selectedData));
   const [saveEmployee, setSaveEmployee] = useState(
     Object.assign({}, selectedData)
@@ -41,26 +43,64 @@ const Infos = ({
   let ref1 = useRef();
   let ref2 = useRef();
   const [confirm, setConfirm] = useState(false);
-  const Confirmation = () => {
-    useEffect(() => {
-      setTimeout(() => {
-        setConfirm(false);
-      }, 4000);
-    }, []);
-    return (
-      <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="absolute top-1/2 left-[40%] w-[300px] h-[200px] bg-white box flex flex-col gap-12"
-        >
-          <p className="text-[30px] font-semibold">Supprimé</p>
-        </motion.div>
-      </AnimatePresence>
-    );
+  //////////////////////////////////////////////////////////
+  const fetchServices = async () => {
+    const services = await fetch(
+      "http://localhost:3000/api/services/getServices",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((value) => {
+        setServices(value);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
-
   ///////////////////////////////////////////////////////////////////////////////
+  const fetchPcMarques = async () => {
+    const pcMarques = await fetch(
+      "http://localhost:3000/api/pcMarques/getPcMarques",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((value) => {
+        setPcMarques(value);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+  /////////////////////////////////////////////////
+  const fetchImprMarques = async () => {
+    const ImprMarques = await fetch(
+      "http://localhost:3000/api/imprMarques/getImprMarques",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((value) => {
+        setImprimanteMarques(value);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+  /////////////////////////////////////////////////
   const handleDelete = async (rowId) => {
     fetch(
       `https://sheet.best/api/sheets/6ea63e6c-960d-41c9-8abd-9902a235fa74/${
@@ -247,6 +287,9 @@ const Infos = ({
   /////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     initializeCheckbox();
+    fetchImprMarques();
+    fetchPcMarques();
+    fetchServices();
     let handler = (e) => {
       if (
         !ref1.current?.contains(e.target) &&
@@ -281,8 +324,6 @@ const Infos = ({
         exit={{ opacity: 0 }}
         className="backdrop relative"
       >
-        {confirm && <Confirmation />}
-
         <div
           ref={ref1}
           className="action-bar absolute bg-white py-6 px-4 top-1/4 right-0 flex flex-col gap-6"
@@ -295,21 +336,24 @@ const Infos = ({
               onClick={() => downloadPDF(selectedData.nom, selectedData.prenom)}
             />
           </motion.button>
-
-          <motion.button
-            whileTap={{ y: 4 }}
-            whileHover={{ scale: 1.2 }}
-            onClick={() => setModify(true)}
-          >
-            <Image className="w-[25px]" alt="modifier" src={modify_icon} />
-          </motion.button>
-          <motion.button
-            whileTap={{ y: 4 }}
-            whileHover={{ scale: 1.2 }}
-            onClick={() => handleDelete(selectedData.id)}
-          >
-            <Image className="w-[25px]" alt="supprimer" src={delete_icon} />
-          </motion.button>
+          {session && session.user.canModify ? (
+            <motion.button
+              whileTap={{ y: 4 }}
+              whileHover={{ scale: 1.2 }}
+              onClick={() => setModify(true)}
+            >
+              <Image className="w-[25px]" alt="modifier" src={modify_icon} />
+            </motion.button>
+          ) : null}
+          {session && session.user.canDelete ? (
+            <motion.button
+              whileTap={{ y: 4 }}
+              whileHover={{ scale: 1.2 }}
+              onClick={() => handleDelete(selectedData.id)}
+            >
+              <Image className="w-[25px]" alt="supprimer" src={delete_icon} />
+            </motion.button>
+          ) : null}
         </div>
         <div
           ref={ref2}
@@ -384,8 +428,8 @@ const Infos = ({
                     className="textbox rounded-[10px] py-1 px-2 font-medium"
                   >
                     {services.map((service) => (
-                      <option className="text-[12px]" value={service}>
-                        {service}
+                      <option className="text-[12px]" value={service.name}>
+                        {service.name}
                       </option>
                     ))}
                   </select>
@@ -435,8 +479,11 @@ const Infos = ({
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           >
                             {pcMarques.map((pcMarque) => (
-                              <option className="text-[12px]" value={pcMarque}>
-                                {pcMarque}
+                              <option
+                                className="text-[12px]"
+                                value={pcMarque.name}
+                              >
+                                {pcMarque.name}
                               </option>
                             ))}
                           </select>
@@ -622,9 +669,9 @@ const Infos = ({
                               {pcMarques.map((pcMarque) => (
                                 <option
                                   className="text-[12px]"
-                                  value={pcMarque}
+                                  value={pcMarque.name}
                                 >
-                                  {pcMarque}
+                                  {pcMarque.name}
                                 </option>
                               ))}
                             </select>
@@ -810,9 +857,9 @@ const Infos = ({
                               {imprimanteMarques.map((imprimanteMarque) => (
                                 <option
                                   className="text-[12px]"
-                                  value={imprimanteMarque}
+                                  value={imprimanteMarque.name}
                                 >
-                                  {imprimanteMarque}
+                                  {imprimanteMarque.name}
                                 </option>
                               ))}
                             </select>
@@ -1015,9 +1062,9 @@ const Infos = ({
                               {imprimanteMarques.map((imprimanteMarque) => (
                                 <option
                                   className="text-[12px]"
-                                  value={imprimanteMarque}
+                                  value={imprimanteMarque.name}
                                 >
-                                  {imprimanteMarque}
+                                  {imprimanteMarque.name}
                                 </option>
                               ))}
                             </select>
@@ -1221,9 +1268,9 @@ const Infos = ({
                               {imprimanteMarques.map((imprimanteMarque) => (
                                 <option
                                   className="text-[12px]"
-                                  value={imprimanteMarque}
+                                  value={imprimanteMarque.name}
                                 >
-                                  {imprimanteMarque}
+                                  {imprimanteMarque.name}
                                 </option>
                               ))}
                             </select>

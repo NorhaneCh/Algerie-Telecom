@@ -22,4 +22,70 @@ model User {
  canModify Boolean
  firstLog Boolean @default(true)
 }
+model Service{
+  id          Int  @id @default(autoincrement())
+  name String @unique
+}
+model PcMarque{
+  id          Int  @id @default(autoincrement())
+  name String @unique
+}
+model ImprimanteMarque{
+  id          Int  @id @default(autoincrement())
+  name String @unique
+}
+model Employee {
+  id          Int  @id @default(autoincrement())
+  nom String
+  prenom String
+  service String
+  pc_bureau Boolean
+  pc_bureau_marque String
+  pc_bureau_model String
+  pc_bureau_ns String
+  pc_bureau_immo	String
+  pc_bureau_se	String
+  pc_bureau_ram	String
+  pc_bureau_etat	String
+  pc_portable	Boolean
+  pc_portable_marque String	
+  pc_portable_model	String
+  pc_portable_ns	String
+  pc_portable_immo	String
+  pc_portable_se	String
+  pc_portable_ram	String
+  pc_portable_etat	String
+  imprimante_multifonctions Boolean
+  imprimante_multi_marque	String
+  imprimante_multi_model	String
+  imprimante_multi_ns	String
+  imprimante_multi_immo	String
+  imprimante_multi_type_config String	
+  imprimante_multi_adresse_ip	String
+  imprimante_multi_etat	String
+  imprimante_simple	Boolean
+  imprimante_simple_marque String	
+  imprimante_simple_model	String
+  imprimante_simple_ns	String
+  imprimante_simple_immo	String
+  imprimante_simple_type_config	String
+  imprimante_simple_adresse_ip	String
+  imprimante_simple_etat	String
+  imprimante_thermique	Boolean
+  imprimante_thermique_marque	String
+  imprimante_thermique_model	String
+  imprimante_thermique_ns	String
+  imprimante_thermique_immo	String
+  imprimante_thermique_type_config String	
+  imprimante_thermique_adresse_ip	String
+  imprimante_thermique_etat	String
+  scanner	Boolean
+  adresse_ip	String
+  securisation	Boolean
+  date_ajout	String
+  ajoute_par	String
+  date_modif	String
+  modifie_par String
+}
+
 

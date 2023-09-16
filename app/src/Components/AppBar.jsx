@@ -24,7 +24,7 @@ const AppBar = () => {
   }, []);
   return (
     <div className="top-0 z-20 backdrop-blur sticky">
-      {session && session.user && (
+      {session && session.user ? (
         <div className="app-bar flex flex-row p-3" ref={ref}>
           <Image className="ml-0 w-[150px]" src={logo} alt="Algérie Télécom" />
           <div className="ml-auto flex flex-row gap-1 items-end justify-center">
@@ -45,9 +45,9 @@ const AppBar = () => {
               toggle ? "flex" : "hidden"
             } z-20 absolute top-16 right-4 flex flex-col items-start rounded-lg border-2 border-gray-color bg-white`}
           >
-            {session && session.user.isAdmin && (
+            {session && session.user.isAdmin ? (
               <div>
-                <Link href="http://localhost:3000/home">
+                <Link href="http://localhost:3000/accueil">
                   <div
                     className="flex flex-row gap-2 p-3 w-[200px] hover:cursor-pointer hover:bg-secondary"
                     onClick={() => setToggle(false)}
@@ -66,7 +66,7 @@ const AppBar = () => {
                   </div>
                 </Link>
               </div>
-            )}
+            ) : null}
 
             <div
               className="flex flex-row gap-2 p-3 w-[200px] hover:cursor-pointer hover:bg-secondary border-b-2 border-gray-color"
@@ -81,7 +81,7 @@ const AppBar = () => {
             </div>
           </motion.div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
