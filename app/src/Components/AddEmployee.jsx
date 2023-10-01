@@ -877,19 +877,18 @@ const ResSec = ({ setShowCurrent, setShowNext, employee, session, data }) => {
   const handleSubmit = async () => {
     if (secCheck) employee.securisation = "oui";
     else employee.securisation = "non";
-    employee.ajouté_par = session.user.username;
+    employee.ajoute_par = session.user.username;
     const currentDate = new Date();
     employee.date_ajout = currentDate.toISOString().split("T")[0];
     {
-      fetch(
-        "https://sheet.best/api/sheets/6ea63e6c-960d-41c9-8abd-9902a235fa74",
+      const addeddata = await fetch(
+        "http://localhost:3000/api/employee/addEmployee",
         {
+          body: JSON.stringify(employee),
           method: "POST",
-          mode: "cors",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(employee),
         }
       )
         .then((r) => r.json())
@@ -1004,10 +1003,9 @@ const Succès = ({ setShowAdd }) => {
   );
 };
 
-const AddEmpoyee = ({ dataLength, setShowAdd, data }) => {
+const AddEmpoyee = ({setShowAdd, data }) => {
   const { data: session } = useSession();
   const [employee, setEmployee] = useState({
-    id: dataLength + 1,
     nom: "",
     prenom: "",
     service: "",
@@ -1055,9 +1053,9 @@ const AddEmpoyee = ({ dataLength, setShowAdd, data }) => {
     adresse_ip: "",
     securisation: "",
     date_ajout: "",
-    ajouté_par: "",
+    ajoute_par: "",
     date_modif: "",
-    modifié_par: "",
+    modifie_par: "",
   });
 
   const [step1, setStep1] = useState(true);

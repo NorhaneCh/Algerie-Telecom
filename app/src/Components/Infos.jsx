@@ -42,7 +42,6 @@ const Infos = ({
   const [secCheck, setSecCheck] = useState(false);
   let ref1 = useRef();
   let ref2 = useRef();
-  const [confirm, setConfirm] = useState(false);
   //////////////////////////////////////////////////////////
   const fetchServices = async () => {
     const services = await fetch(
@@ -101,52 +100,71 @@ const Infos = ({
       });
   };
   /////////////////////////////////////////////////
-  const handleDelete = async (rowId) => {
-    fetch(
-      `https://sheet.best/api/sheets/6ea63e6c-960d-41c9-8abd-9902a235fa74/${
-        rowId - 1
-      }`,
+  const handleDelete = async (id) => {
+    const deletedEmployee = await fetch(
+      "http://localhost:3000/api/employee/deleteEmployee",
       {
+        body: JSON.stringify({ id }),
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
     )
       .then((response) => response.json())
       .then(() => {
-        const updatedData = data.filter((row) => row.id !== rowId);
+        const updatedData = data.filter((row) => row.id !== id);
 
         setData(updatedData);
       })
       .then(setShowInfos(false))
-      .then(setConfirm(true))
       .catch((error) => {
-        console.error(error);
+        console.error("Error:", error);
       });
   };
-  /////////////////////////////////////////////////////////////////////////////////
-  const handleChange = async (rowid) => {
-    // const [id, ...employeeWithoutId] = employee;
-    employee.modifié_par = session.user.username;
-    const currentDate = new Date();
-    employee.date_modif = currentDate.toISOString().split("T")[0];
-    fetch(
-      `https://sheet.best/api/sheets/6ea63e6c-960d-41c9-8abd-9902a235fa74/${
-        rowid - 1
-      }`,
+  //////////////////////////////////////////////////////////
+  const getData = async () => {
+    const data = await fetch(
+      "http://localhost:3000/api/employee/getEmployees",
       {
-        method: "PUT",
-        mode: "cors",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
+      }
+    )
+      .then((response) => response.json())
+      .then((value) => {
+        setData(value);
+      })
+      .then((value) => {
+        setFullData(value);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  const handleChange = async (rowid) => {
+    employee.modifie_par = session.user.username;
+    const currentDate = new Date();
+    employee.date_modif = currentDate.toISOString().split("T")[0];
+    const addeddata = await fetch(
+      "http://localhost:3000/api/employee/updateEmployee",
+      {
         body: JSON.stringify(employee),
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
     )
       .then((r) => r.json())
       .catch((error) => {
         console.error(error);
       });
-    data[rowid - 1] = employee;
-    console.log(data[rowid - 1]);
+    getData();
     setSelectedData(employee);
     setModify(false);
   };
@@ -303,7 +321,7 @@ const Infos = ({
     return () => {
       document.removeEventListener("mousedown", handler);
     };
-  });
+  }, []);
   //////////////////////////////////////////////////////////////////////////////////////
   const downloadPDF = (nom, prenom) => {
     const capture = document.querySelector(".pdf-file");
@@ -328,13 +346,12 @@ const Infos = ({
           ref={ref1}
           className="action-bar absolute bg-white py-6 px-4 top-1/4 right-0 flex flex-col gap-6"
         >
-          <motion.button whileTap={{ y: 4 }} whileHover={{ scale: 1.2 }}>
-            <Image
-              className="w-[25px]"
-              alt="télécharger"
-              src={download_icon}
-              onClick={() => downloadPDF(selectedData.nom, selectedData.prenom)}
-            />
+          <motion.button
+            whileTap={{ y: 4 }}
+            whileHover={{ scale: 1.2 }}
+            onClick={() => downloadPDF(selectedData.nom, selectedData.prenom)}
+          >
+            <Image className="w-[25px]" alt="télécharger" src={download_icon} />
           </motion.button>
           {session && session.user.canModify ? (
             <motion.button
@@ -365,20 +382,18 @@ const Infos = ({
           />
           <motion.button
             whileTap={{ y: 5 }}
-            whileHover={{ scale: 1.1 }}
             onClick={() => handleChange(selectedData.id)}
-            className={`save-btn absolute bottom-6 right-6 flex flex-row gap-2 items-center ${
+            className={`font-semibold absolute bottom-6 right-6 flex flex-row gap-2 items-center rounded-md text-white bg-green-color px-4 py-2 w-[150px] hover:bg-dark-green ${
               modify ? "flex" : "hidden"
             }`}
           >
-            <p className="font-semibold">Enregistrer</p>
+            <p>Enregistrer</p>
             <Image src={save_icon} alt="enregistrer" className="w-[25px]" />
           </motion.button>
           <motion.button
             whileTap={{ y: 5 }}
-            whileHover={{ scale: 1.1 }}
             onClick={handleDecline}
-            className={`decline-btn mx-auto font-semibold text-center absolute bottom-6 left-6 ${
+            className={`font-semibold absolute bottom-6 left-6 rounded-md text-center text-white bg-red-500 px-9 py-2 w-[150px] hover:bg-red-600 ${
               modify ? "flex" : "hidden"
             }`}
           >
@@ -444,10 +459,18 @@ const Infos = ({
                   <div className={`${modify ? "hidden" : "flex"}`}>
                     {selectedData.pc_bureau == "non" &&
                       employee.pc_bureau == "non" && (
-                        <Image alt="frame" src={false_icon} />
+                        <Image
+                          alt="frame"
+                          className="w-[25px] h-[25px]"
+                          src={false_icon}
+                        />
                       )}
                     {employee.pc_bureau == "oui" && (
-                      <Image alt="frame" src={true_icon} />
+                      <Image
+                        alt="frame"
+                        className="w-[25px] h-[25px]"
+                        src={true_icon}
+                      />
                     )}
                   </div>
                   <button
@@ -632,10 +655,18 @@ const Infos = ({
                 <div className="flex flex-row gap-2">
                   <div className={`${modify ? "hidden" : "flex"}`}>
                     {selectedData.pc_portable == "non" && (
-                      <Image alt="frame" src={false_icon} />
+                      <Image
+                        alt="frame"
+                        className="w-[25px] h-[25px]"
+                        src={false_icon}
+                      />
                     )}
                     {selectedData.pc_portable == "oui" && (
-                      <Image alt="frame" src={true_icon} />
+                      <Image
+                        alt="frame"
+                        className="w-[25px] h-[25px]"
+                        src={true_icon}
+                      />
                     )}
                   </div>
                   <button
@@ -820,10 +851,18 @@ const Infos = ({
                 <div className="flex flex-row gap-2">
                   <div className={`${modify ? "hidden" : "flex"}`}>
                     {selectedData.imprimante_multifonctions == "non" && (
-                      <Image alt="frame" src={false_icon} />
+                      <Image
+                        alt="frame"
+                        className="w-[25px] h-[25px]"
+                        src={false_icon}
+                      />
                     )}
                     {selectedData.imprimante_multifonctions == "oui" && (
-                      <Image alt="frame" src={true_icon} />
+                      <Image
+                        alt="frame"
+                        className="w-[25px] h-[25px]"
+                        src={true_icon}
+                      />
                     )}
                   </div>
                   <button
@@ -1025,10 +1064,18 @@ const Infos = ({
                 <div className="flex flex-row gap-2">
                   <div className={`${modify ? "hidden" : "flex"}`}>
                     {selectedData.imprimante_simple == "non" && (
-                      <Image alt="frame" src={false_icon} />
+                      <Image
+                        alt="frame"
+                        className="w-[25px] h-[25px]"
+                        src={false_icon}
+                      />
                     )}
                     {selectedData.imprimante_simple == "oui" && (
-                      <Image alt="frame" src={true_icon} />
+                      <Image
+                        alt="frame"
+                        className="w-[25px] h-[25px]"
+                        src={true_icon}
+                      />
                     )}
                   </div>
                   <button
@@ -1229,10 +1276,18 @@ const Infos = ({
                 <div className="flex flex-row gap-2">
                   <div className={`${modify ? "hidden" : "flex"}`}>
                     {selectedData.imprimante_thermique == "non" && (
-                      <Image alt="frame" src={false_icon} />
+                      <Image
+                        alt="frame"
+                        className="w-[25px] h-[25px]"
+                        src={false_icon}
+                      />
                     )}
                     {selectedData.imprimante_thermique == "oui" && (
-                      <Image alt="frame" src={true_icon} />
+                      <Image
+                        alt="frame"
+                        className="w-[25px] h-[25px]"
+                        src={true_icon}
+                      />
                     )}
                   </div>
                   <button
@@ -1441,10 +1496,18 @@ const Infos = ({
                 <div className="flex flex-row gap-2">
                   <div className={`${modify ? "hidden" : "flex"}`}>
                     {selectedData.scanner == "non" && (
-                      <Image alt="frame" src={false_icon} />
+                      <Image
+                        alt="frame"
+                        className="w-[25px] h-[25px]"
+                        src={false_icon}
+                      />
                     )}
                     {selectedData.scanner == "oui" && (
-                      <Image alt="frame" src={true_icon} />
+                      <Image
+                        alt="frame"
+                        className="w-[25px] h-[25px]"
+                        src={true_icon}
+                      />
                     )}
                   </div>
                   <button
@@ -1481,10 +1544,18 @@ const Infos = ({
               <div className="flex flex-row gap-2 items-center">
                 <div className={`${modify ? "hidden" : "flex"}`}>
                   {selectedData.securisation == "non" && (
-                    <Image alt="frame" className="h-[25px]" src={false_icon} />
+                    <Image
+                      alt="frame"
+                      className="w-[25px] h-[25px]"
+                      src={false_icon}
+                    />
                   )}
                   {selectedData.securisation == "oui" && (
-                    <Image alt="frame" className="h-[25px]" src={true_icon} />
+                    <Image
+                      alt="frame"
+                      className="w-[25px] h-[25px]"
+                      src={true_icon}
+                    />
                   )}
                 </div>
 
@@ -1500,23 +1571,25 @@ const Infos = ({
                 <div className="flex flex-row gap-3">
                   <div className="flex flex-row gap-1 items-center">
                     <p className="font-semibold">Ajouté par : </p>
-                    <p>{selectedData.ajouté_par}</p>
+                    <p>{selectedData.ajoute_par}</p>
                   </div>
                   <div className="flex flex-row gap-1 items-center">
                     <p className="font-semibold">Le : </p>
                     <p>{selectedData.date_ajout}</p>
                   </div>
                 </div>
-                <div className="flex flex-row gap-3">
-                  <div className="flex flex-row gap-1 items-center">
-                    <p className="font-semibold">Modifié par : </p>
-                    <p>{selectedData.modifié_par}</p>
+                {selectedData.modifie_par != "" && (
+                  <div className="flex flex-row gap-3">
+                    <div className="flex flex-row gap-1 items-center">
+                      <p className="font-semibold">Modifié par : </p>
+                      <p>{selectedData.modifie_par}</p>
+                    </div>
+                    <div className="flex flex-row gap-1 items-center">
+                      <p className="font-semibold">Le : </p>
+                      <p>{selectedData.date_modif}</p>
+                    </div>
                   </div>
-                  <div className="flex flex-row gap-1 items-center">
-                    <p className="font-semibold">Le : </p>
-                    <p>{selectedData.date_modif}</p>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

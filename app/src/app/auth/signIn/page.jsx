@@ -30,7 +30,7 @@ const LoginPage = () => {
   };
   return (
     <div className="login-page h-screen flex flex-col lg:flex-row xl:flex-row lg:gap-40 xl:gap-40 gap-20 items-center justify-center pt-28 pb-28">
-      <div>
+      <div className="-mt-56">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -48,7 +48,7 @@ const LoginPage = () => {
         >
           Gérer votre parc informatique
         </motion.p>
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.7, delay: 0.7 }}
@@ -69,7 +69,7 @@ const LoginPage = () => {
           <a href="" target="_blanck">
             <Image className="w-[35px]" alt="linkedin" src={linkedin}></Image>
           </a>
-        </motion.div>
+        </motion.div> */}
       </div>
       <motion.div
         initial={{ opacity: 0 }}

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../Components/Table";
 import Infos from "../../Components/Infos";
-import AddEmpoyee from "../../Components/AddEmpoyee";
+import AddEmployee from "../../Components/AddEmployee";
 import UpdatePass from "../../Components/UpdatePass";
 import Image from "next/image";
 import { styles } from "../../styles";
@@ -13,14 +13,16 @@ import { useSession } from "next-auth/react";
 
 //i need to secure the end point
 const HomePage = () => {
-  const [data, setData] = useState();
-  const [fullData, setFullData] = useState();
+  const [showLoader, setShowLoader] = useState(true);
+  const [data, setData] = useState([]);
+  const [fullData, setFullData] = useState([]);
   const [showInfos, setShowInfos] = useState(false);
   const [selectedData, setSelectedData] = useState();
   const [showAdd, setShowAdd] = useState(false);
   const { data: session } = useSession();
 
-  const getData = async () => {
+  {
+    /* const getData = async () => {
     try {
       const res = await fetch(
         `https://sheet.best/api/sheets/6ea63e6c-960d-41c9-8abd-9902a235fa74?_format=index`,
@@ -32,49 +34,64 @@ const HomePage = () => {
     } catch (error) {
       console.log(error);
     }
-  };
-  function handleAdd() {
-    setShowAdd(true);
-    getData();
+  };*/
   }
+  //////////////////////////////////////////////////////////
+  const getData = async () => {
+    const data = await fetch(
+      "http://localhost:3000/api/employee/getEmployees",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((value) => {
+        setFullData(value);
+        setData(value);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+  /////////////////////////////////////////////////////////////////////////////
 
-  function handleFiltre(event) {
+  function handleFiltre(search) {
     const newData = fullData.filter(
       (row) =>
-        row.nom.toLowerCase().includes(event.target.value.toLowerCase()) ||
-        row.prenom.toLowerCase().includes(event.target.value.toLowerCase()) ||
-        row.service.toLowerCase().includes(event.target.value.toLowerCase()) ||
-        row.pc_bureau_marque
-          .toLowerCase()
-          .includes(event.target.value.toLowerCase()) ||
-        row.pc_bureau_model
-          .toLowerCase()
-          .includes(event.target.value.toLowerCase()) ||
-        row.pc_portable_marque
-          .toLowerCase()
-          .includes(event.target.value.toLowerCase()) ||
-        row.pc_portable_model
-          .toLowerCase()
-          .includes(event.target.value.toLowerCase()) ||
+        row.nom.toLowerCase().includes(search.toLowerCase()) ||
+        row.prenom.toLowerCase().includes(search.toLowerCase()) ||
+        row.service.toLowerCase().includes(search.toLowerCase()) ||
+        row.pc_bureau_marque.toLowerCase().includes(search.toLowerCase()) ||
+        row.pc_bureau_model.toLowerCase().includes(search.toLowerCase()) ||
+        row.pc_portable_marque.toLowerCase().includes(search.toLowerCase()) ||
+        row.pc_portable_model.toLowerCase().includes(search.toLowerCase()) ||
         row.imprimante_multi_marque
           .toLowerCase()
-          .includes(event.target.value.toLowerCase()) ||
+          .includes(search.toLowerCase()) ||
         row.imprimante_multi_model
           .toLowerCase()
-          .includes(event.target.value.toLowerCase()) ||
+          .includes(search.toLowerCase()) ||
         row.imprimante_thermique_marque
           .toLowerCase()
-          .includes(event.target.value.toLowerCase()) ||
+          .includes(search.toLowerCase()) ||
         row.imprimante_thermique_model
           .toLowerCase()
-          .includes(event.target.value.toLowerCase()) ||
-        row.adresse_ip.toLowerCase().includes(event.target.value.toLowerCase())
+          .includes(search.toLowerCase()) ||
+        row.adresse_ip.toLowerCase().includes(search.toLowerCase())
     );
     setData(newData);
   }
 
   useEffect(() => {
     getData();
+    if (data) {
+      setTimeout(() => {
+        setShowLoader(false);
+      }, 2000);
+    }
   }, []);
   return (
     <div className={`relative home min-h-screen ${styles.paddingX}`}>
@@ -89,13 +106,7 @@ const HomePage = () => {
               data={data}
             />
           )}
-          {showAdd && (
-            <AddEmpoyee
-              setShowAdd={setShowAdd}
-              data={data}
-              dataLength={data?.length}
-            />
-          )}
+          {showAdd && <AddEmployee setShowAdd={setShowAdd} data={data} />}
 
           <div className={`py-20 ${styles.paddingX}`}>
             <div className="flex flex-row">
@@ -108,7 +119,7 @@ const HomePage = () => {
                       boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)",
                     }}
                     whileTap={{ y: 0 }}
-                    onClick={handleAdd}
+                    onClick={() => setShowAdd(true)}
                     className="add-btn flex flex-row gap-2 items-center justify-center"
                   >
                     <Image
@@ -130,13 +141,13 @@ const HomePage = () => {
               >
                 <input
                   type="text"
-                  onChange={handleFiltre}
+                  onChange={(e) => handleFiltre(e.target.value)}
                   placeholder="Filtrer les résultats"
                   className="textbox rounded-[20px] py-3 px-6 font-medium"
                 />
               </motion.label>
             </div>
-            {!data ? (
+            {showLoader ? (
               <SyncLoader
                 className="mx-auto w-[100px] mt-36"
                 color="#8fb3ff"

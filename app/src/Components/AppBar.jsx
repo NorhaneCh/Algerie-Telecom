@@ -45,7 +45,27 @@ const AppBar = () => {
               toggle ? "flex" : "hidden"
             } z-20 absolute top-16 right-4 flex flex-col items-start rounded-lg border-2 border-gray-color bg-white`}
           >
-            {session && session.user.isAdmin ? (
+            <div>
+                <Link href="http://localhost:3000/accueil">
+                  <div
+                    className="flex flex-row gap-2 p-3 w-[200px] hover:cursor-pointer hover:bg-secondary"
+                    onClick={() => setToggle(false)}
+                  >
+                    <Image className="w-[20px] h-[20px]" src={home}></Image>
+                    <p>Accueil</p>
+                  </div>
+                </Link>
+                <Link href="http://localhost:3000/paramaitre">
+                  <div
+                    className="flex flex-row gap-2 p-3 w-[200px] hover:cursor-pointer hover:bg-secondary"
+                    onClick={() => setToggle(false)}
+                  >
+                    <Image className="w-[20px] h-[20px]" src={settings}></Image>
+                    <p>Paramaitre</p>
+                  </div>
+                </Link>
+              </div>
+            {/* {session && session.user.isAdmin ? (
               <div>
                 <Link href="http://localhost:3000/accueil">
                   <div
@@ -66,7 +86,7 @@ const AppBar = () => {
                   </div>
                 </Link>
               </div>
-            ) : null}
+            ) : null} */}
 
             <div
               className="flex flex-row gap-2 p-3 w-[200px] hover:cursor-pointer hover:bg-secondary border-b-2 border-gray-color"
