@@ -442,8 +442,8 @@ const Infos = ({
                     onChange={(e) => (employee.service = e.target.value)}
                     className="textbox rounded-[10px] py-1 px-2 font-medium"
                   >
-                    {services.map((service) => (
-                      <option className="text-[12px]" value={service.name}>
+                    {services.map((service,index) => (
+                      <option key={index} className="text-[12px]" value={service.name}>
                         {service.name}
                       </option>
                     ))}
@@ -501,8 +501,9 @@ const Infos = ({
                             }
                             className="textbox rounded-[5px] py-1 px-2 font-medium"
                           >
-                            {pcMarques.map((pcMarque) => (
+                            {pcMarques.map((pcMarque,index) => (
                               <option
+                              key={index}
                                 className="text-[12px]"
                                 value={pcMarque.name}
                               >
@@ -697,8 +698,9 @@ const Infos = ({
                               }
                               className="textbox rounded-[5px] py-1 px-2 font-medium"
                             >
-                              {pcMarques.map((pcMarque) => (
+                              {pcMarques.map((pcMarque,index) => (
                                 <option
+                                key={index}
                                   className="text-[12px]"
                                   value={pcMarque.name}
                                 >
@@ -893,8 +895,9 @@ const Infos = ({
                               }
                               className="textbox rounded-[5px] py-1 px-2 font-medium"
                             >
-                              {imprimanteMarques.map((imprimanteMarque) => (
+                              {imprimanteMarques.map((imprimanteMarque,index) => (
                                 <option
+                                key={index}
                                   className="text-[12px]"
                                   value={imprimanteMarque.name}
                                 >
@@ -1106,8 +1109,9 @@ const Infos = ({
                               }
                               className="textbox rounded-[5px] py-1 px-2 font-medium"
                             >
-                              {imprimanteMarques.map((imprimanteMarque) => (
+                              {imprimanteMarques.map((imprimanteMarque,index) => (
                                 <option
+                                key={index}
                                   className="text-[12px]"
                                   value={imprimanteMarque.name}
                                 >
@@ -1320,8 +1324,9 @@ const Infos = ({
                               }
                               className="textbox rounded-[5px] py-1 px-2 font-medium"
                             >
-                              {imprimanteMarques.map((imprimanteMarque) => (
+                              {imprimanteMarques.map((imprimanteMarque,index) => (
                                 <option
+                                key={index}
                                   className="text-[12px]"
                                   value={imprimanteMarque.name}
                                 >

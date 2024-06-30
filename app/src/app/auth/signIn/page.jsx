@@ -6,11 +6,6 @@ import Image from "next/image";
 import {
   eye_off,
   eye,
-  facebook,
-  twitter,
-  instagram,
-  youtube,
-  linkedin,
 } from "../../../Assets/index";
 
 const LoginPage = () => {

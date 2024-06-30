@@ -20,7 +20,7 @@ import { motion } from "framer-motion";
 import UserInfos from "../../Components/UserInfos";
 import { Checkbox } from "../../Components/Checkbox";
 
-const page = () => {
+const Page = () => {
   const [user, setUser] = useState({
     username: "",
     password: "0000",
@@ -484,7 +484,7 @@ const page = () => {
                       className="w-[25px] h-[25px]"
                       alt={"settings"}
                     ></Image>
-                    <p className="font-medium text-[20px]">Paramaitre</p>
+                    <p className="font-medium text-[20px]">Paramaitres</p>
                   </div>
                   <div className="mt-12">
                     <div
@@ -643,6 +643,7 @@ const page = () => {
                         <div className="ml-auto flex flex-col lg:h-[600px] xl:h-[1000px] overflow-auto px-9 pb-4 text-[15px]">
                           {users.map((user, i) => (
                             <Dropdown
+                              key={i}
                               overlay={
                                 <div className="z-0 flex flex-col bg-gray-200 border boder-gray-500 rounded-md">
                                   <div
@@ -757,7 +758,7 @@ const page = () => {
 
                         <div className="border-r border-light-gray w-1/3">
                           <p className="font-semibold text-center">
-                            Marques d'imprimantes :{" "}
+                            Marques d&apos;imprimantes :
                           </p>
 
                           <div className="flex flex-row gap-2 items-center justify-center mt-9 px-2">
@@ -875,7 +876,7 @@ const page = () => {
               </p>
               <Link href="http://localhost:3000/accueil">
                 <p className="text-primary hover:text-black font-medium">
-                  revenir à la page d'accueil
+                  revenir à la page d&apos;accueil
                 </p>
               </Link>
             </motion.div>
@@ -887,7 +888,7 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
 
 const Popup = ({ content, forDelete }) => {
   const pathVariants = {

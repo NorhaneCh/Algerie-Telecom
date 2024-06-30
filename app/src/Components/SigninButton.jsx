@@ -11,6 +11,7 @@ const SigninButton = () => {
       <div className="flex flex-row gap-20 ml-auto bg-transparent">
         <div className="flex flex-row items-center gap-1 bg-transparent">
           <Image
+          alt="icon"
             className="bg-transparent w-[30px] h-[30px]"
             src={person}
           ></Image>

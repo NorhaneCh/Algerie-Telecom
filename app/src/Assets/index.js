@@ -6,7 +6,7 @@ import delete_icon from "./delete_icon.png";
 import search_icon from "./search_icon.png";
 import filtre_icon from "./filtre.png";
 import add_frame from "./add_frame.png";
-import person from "./person.png";
+import person from "./Person.png";
 import facebook from "./socials/facebook.png";
 import twitter from "./socials/twitter.png";
 import instagram from "./socials/instagram.png";
@@ -29,7 +29,7 @@ import users_icon from "./users.png";
 import grid_icon from "./grid.png";
 import logout_black from "./logout_black.png";
 import edit_icon from "./edit_icon.png";
-import about_icon from "./about_icon.png"
+import about_icon from "./about_icon.png";
 
 export {
   algerie_telecom,
@@ -63,5 +63,5 @@ export {
   grid_icon,
   logout_black,
   edit_icon,
-  about_icon
+  about_icon,
 };

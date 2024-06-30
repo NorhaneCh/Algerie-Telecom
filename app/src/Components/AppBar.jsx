@@ -51,7 +51,7 @@ const AppBar = () => {
                     className="flex flex-row gap-2 p-3 w-[200px] hover:cursor-pointer hover:bg-secondary"
                     onClick={() => setToggle(false)}
                   >
-                    <Image className="w-[20px] h-[20px]" src={home}></Image>
+                    <Image className="w-[20px] h-[20px]" src={home} alt="icon"></Image>
                     <p>Accueil</p>
                   </div>
                 </Link>
@@ -60,7 +60,7 @@ const AppBar = () => {
                     className="flex flex-row gap-2 p-3 w-[200px] hover:cursor-pointer hover:bg-secondary"
                     onClick={() => setToggle(false)}
                   >
-                    <Image className="w-[20px] h-[20px]" src={settings}></Image>
+                    <Image className="w-[20px] h-[20px]" src={settings} alt="icon"></Image>
                     <p>Paramaitre</p>
                   </div>
                 </Link>

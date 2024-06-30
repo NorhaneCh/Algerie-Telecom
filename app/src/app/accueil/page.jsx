@@ -92,7 +92,7 @@ const HomePage = () => {
         setShowLoader(false);
       }, 2000);
     }
-  }, []);
+  },[]);
   return (
     <div className={`relative home min-h-screen ${styles.paddingX}`}>
       {!(session && session.user.firstLog) && (
